@@ -139,9 +139,9 @@
 
         $('#btnRegister').on('click', function () {
             let txtFirstName = $('#txtFirstName').val();
-            let txtlastName = $('#txtLastName').val();
-            let txtRegisterEmail = $('#txtRegisterEmail').val();
-            let txtRegisterPassword = $('#txtRegisterPassword').val();
+            let txtLastName = $('#txtLastName').val();
+            let txtEmail = $('#txtRegisterEmail').val();
+            let txtPassword = $('#txtRegisterPassword').val();
             let txtStreetAddress1 = $('#txtStreetAddress1').val();
             let txtStreetAddress2 = $('#txtStreetAddress2').val();
             let txtCity = $('#txtCity').val();
@@ -157,6 +157,43 @@
 
             let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
             if (!regexPassword.exec(txtPassword)) { 
+                return;
+            }
+
+            if (txtFirstName.length < 2){
+                return;
+            }
+
+            if (txtLastName.length < 2){
+                return;
+            }
+
+            if (txtStreetAddress1.length < 5){
+                return;
+            }
+
+            // none for address 2, that is allowed to be blank
+
+            if (txtCity.length < 2){
+                return;
+            }
+
+            if (txtState.length < 2){
+                return;
+            }
+
+            let regexZip = /\d{5}([ \-]\d{4})?/;
+            if (!regexZip.exec(txtZip)){
+                return;
+            }
+
+            let regexPhoneNum = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+            if (!regexPhoneNum.exec(txtPhone)){
+                return;
+            }
+
+            // Assuming IDs are length 4, may change later!
+            if (txtCoopID.length != 4){
                 return;
             }
 
