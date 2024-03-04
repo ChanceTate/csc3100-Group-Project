@@ -117,17 +117,17 @@
         });
 
         $('#btnLogin').on('click', function () {
-            let loginEmail = $('#txtLoginEmail').val();
-            let loginPassword = $('#txtLoginPassword').val();
+            let txtEmail = $('#txtLoginEmail').val();
+            let txtPassword = $('#txtLoginPassword').val();
 
             // TODO: Replace with actual email/password API stuff when we have it
             let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-            if (!regexEmail.exec(loginEmail)) { 
+            if (!regexEmail.exec(txtEmail)) { 
                 return;
             }
 
             let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!regexPassword.exec(loginPassword)) { 
+            if (!regexPassword.exec(txtPassword)) { 
                 return;
             }
             /////////////////////////////////////////////////////////////////////
@@ -138,7 +138,6 @@
         });
 
         $('#btnRegister').on('click', function () {
-
             let txtFirstName = $('#txtFirstName').val();
             let txtlastName = $('#txtlastName').val();
             let txtRegisterEmail = $('#txtRegisterEmail').val();
@@ -150,6 +149,16 @@
             let txtZip = $('#txtZip').val();
             let txtPhone = $('#txtPhone').val();
             let txtCoopID = $('#txtCoopID').val();
+
+            let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+            if (!regexEmail.exec(txtEmail)) { 
+                return;
+            }
+
+            let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            if (!regexPassword.exec(txtPassword)) { 
+                return;
+            }
 
             $('#divRegister').slideToggle(function () {
                 $('#divDashboard').slideToggle();
