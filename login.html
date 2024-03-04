@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimpleCoop Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 </head>
 
 <body class="bg-dark">
@@ -51,8 +52,8 @@
                         <label for="txtRegisterEmail" class="form-label">Email</label>
                         <input id="txtRegisterEmail" class="form-control" type="email">
 
-                        <label for="txtRegisterPass" class="form-label">Password</label>
-                        <input id="txtRegisterPass" class="form-control" type="password">
+                        <label for="txtRegisterPassword" class="form-label">Password</label>
+                        <input id="txtRegisterPassword" class="form-control" type="password">
 
                         <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
                         <input id="txtStreetAddress1" class="form-control" type="text">
@@ -94,8 +95,11 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script lang="text/javascript">
         // Toggles login and register cards using the jQuery "is visible" tool
@@ -133,12 +137,12 @@
             });
         });
 
-        $('#btnRegister').on('click', function() {
+        $('#btnRegister').on('click', function () {
 
             let txtFirstName = $('#txtFirstName').val();
             let txtlastName = $('#txtlastName').val();
             let txtRegisterEmail = $('#txtRegisterEmail').val();
-            let txtRegisterPass = $('#txtRegisterPass').val();
+            let txtRegisterPassword = $('#txtRegisterPassword').val();
             let txtStreetAddress1 = $('#txtStreetAddress1').val();
             let txtStreetAddress2 = $('#txtStreetAddress2').val();
             let txtCity = $('#txtCity').val();
@@ -146,7 +150,11 @@
             let txtZip = $('#txtZip').val();
             let txtPhone = $('#txtPhone').val();
             let txtCoopID = $('#txtCoopID').val();
-            
+
+            $('#divRegister').slideToggle(function () {
+                $('#divDashboard').slideToggle();
+            });
+
         });
     </script>
 </body>
