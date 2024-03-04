@@ -43,37 +43,37 @@
                     <div class="form-group">
 
                         <label for="txtFirstName" class="form-label">First Name</label>
-                        <input id="txtFirstName" class="form-control">
+                        <input id="txtFirstName" class="form-control" type="text">
 
                         <label for="txtlastName" class="form-label">Last Name</label>
-                        <input id="txtLastName" class="form-control">
+                        <input id="txtLastName" class="form-control" type="text">
 
                         <label for="txtRegisterEmail" class="form-label">Email</label>
-                        <input id="txtRegisterEmail" class="form-control">
+                        <input id="txtRegisterEmail" class="form-control" type="email">
 
                         <label for="txtRegisterPass" class="form-label">Password</label>
-                        <input id="txtRegisterPass" class="form-control">
+                        <input id="txtRegisterPass" class="form-control" type="password">
 
                         <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
-                        <input id="txtStreetAddress1" class="form-control">
+                        <input id="txtStreetAddress1" class="form-control" type="text">
 
                         <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
-                        <input id="txtStreetAddress2" class="form-control">
+                        <input id="txtStreetAddress2" class="form-control" type="text">
 
                         <label for="txtCity" class="form-label">City</label>
-                        <input id="txtCity" class="form-control">
+                        <input id="txtCity" class="form-control" type="text">
 
                         <label for="txtState" class="form-label">State</label>
-                        <input id="txtState" class="form-control">
+                        <input id="txtState" class="form-control" type="text">
 
                         <label for="txtZip" class="form-label">Zipcode</label>
-                        <input id="txtZip" class="form-control">
+                        <input id="txtZip" class="form-control" type="text">
 
                         <label for="txtPhone" class="form-label">Phone Number</label>
-                        <input id="txtPhone" class="form-control">
+                        <input id="txtPhone" class="form-control" type="text">
 
                         <label for="txtCoopID" class="form-label">Coop Orginization ID</label>
-                        <input id="txtCoopID" class="form-control">
+                        <input id="txtCoopID" class="form-control" type="text">
 
                         <button class="col-12 btn btn-success mt-4" id="btnRegister" type="button">Register</button>
                         <div class="col-12 d-flex justify-content-center">
@@ -97,7 +97,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    <script lang="text/javascript">
         // Toggles login and register cards using the jQuery "is visible" tool
         $('.btnToggle').on('click', function () {
             if ($('#divLogin').is(':visible')) {
@@ -116,13 +116,17 @@
             let loginEmail = $('#txtLoginEmail').val();
             let loginPassword = $('#txtLoginPassword').val();
 
-            if (loginEmail.length < 7) { // do regex here later
+            // TODO: Replace with actual email/password API stuff when we have it
+            let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+            if (!regexEmail.exec(loginEmail)) { 
                 return;
             }
 
-            if (loginPassword.length < 1) { // also do regex here
+            let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            if (!regexPassword.exec(loginPassword)) { 
                 return;
             }
+            /////////////////////////////////////////////////////////////////////
 
             $('#divLogin').slideToggle(function () {
                 $('#divDashboard').slideToggle();
