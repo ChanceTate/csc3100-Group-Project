@@ -5,14 +5,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimpleCoop Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/lib/login.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/simplex/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/lib/login.css">
 </head>
 
 <body class="bg-dark">
+    <nav class="navbar navbar-expand-lg bg-secondary border-0 border-bottom border-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand">SwollenHippo Smart Coop</a>
+        </div>
+    </nav>
+
     <div class="d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card col-10 col-sm-7 col-md-5 col-lg-4" id="divLogin">
+        <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin">
             <div class="card-header">
                 <h3 class="text-center">Login</h3>
             </div>
@@ -20,11 +25,11 @@
                 <form>
                     <div class="form-group mt-4">
                         <label for="txtLoginEmail" class="form-label">Email</label>
-                        <input id="txtLoginEmail" class="form-control" type="email">
+                        <input id="txtLoginEmail" class="form-control" type="email" placeholder="johndoe@gmail.com">
                     </div>
                     <div class="form-group mt-4">
                         <label for="txtLoginPassword" class="form-label">Password</label>
-                        <input id="txtLoginPassword" class="form-control" type="password">
+                        <input id="txtLoginPassword" class="form-control" type="password" placeholder="Password">
                     </div>
 
                     <button class="col-12 btn btn-success mt-4" id="btnLogin" type="button">Login</button>
@@ -36,62 +41,76 @@
             </div>
         </div>
 
-        <div class="card col-10 col-sm-7 col-md-5 col-lg-4 my-4" id="divRegister" style="display:none;">
+        <div class="card border-primary col-10 col-md-7 col-lg-5 my-4" id="divRegister" style="display:none;">
             <div class="card-header">
                 <h3 class="text-center">Registration</h3>
             </div>
             <div class="card-body">
                 <form>
-                    <div class="form-group">
-
-                        <label for="txtFirstName" class="form-label">First Name</label>
-                        <input id="txtFirstName" class="form-control" type="text">
-
-                        <label for="txtLastName" class="form-label">Last Name</label>
-                        <input id="txtLastName" class="form-control" type="text">
-
-                        <label for="txtRegisterEmail" class="form-label">Email</label>
-                        <input id="txtRegisterEmail" class="form-control" type="email">
-
-                        <label for="txtRegisterPassword" class="form-label">Password</label>
-                        <input id="txtRegisterPassword" class="form-control" type="password">
-
-                        <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
-                        <input id="txtStreetAddress1" class="form-control" type="text">
-
-                        <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
-                        <input id="txtStreetAddress2" class="form-control" type="text">
-
-                        <label for="txtCity" class="form-label">City</label>
-                        <input id="txtCity" class="form-control" type="text">
-
-                        <label for="txtState" class="form-label">State</label>
-                        <input id="txtState" class="form-control" type="text">
-
-                        <label for="txtZip" class="form-label">ZIP Code</label>
-                        <input id="txtZip" class="form-control" type="text">
-
-                        <label for="txtPhone" class="form-label">Phone Number</label>
-                        <input id="txtPhone" class="form-control" type="text">
-
-                        <label for="txtCoopID" class="form-label">Coop Orginization ID</label>
-                        <input id="txtCoopID" class="form-control" type="text">
-
-                        <button class="col-12 btn btn-success mt-4" id="btnRegister" type="button">Register</button>
-                        <div class="col-12 d-flex justify-content-center">
-                            <a class="col-12 text-center btnToggle" data-card="Register">Return to login</a>
+                    <div class="d-flex flex-column flex-md-row justify-content-evenly align-items-center align-items-md-start">
+                        <div class="col-10 col-md-5">
+                            <div class="form-group mt-2">
+                                <label for="txtFirstName" class="form-label">First Name</label>
+                                <input id="txtFirstName" class="form-control" type="text" placeholder="John">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtLastName" class="form-label">Last Name</label>
+                                <input id="txtLastName" class="form-control" type="text" placeholder="Doe">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtRegisterEmail" class="form-label">Email</label>
+                                <input id="txtRegisterEmail" class="form-control" type="email" placeholder="johndoe@gmail.com">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtRegisterPassword" class="form-label">Password</label>
+                                <input id="txtRegisterPassword" class="form-control" type="password" placeholder="Password">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtPhone" class="form-label">Phone Number</label>
+                                <input id="txtPhone" class="form-control" type="text" placeholder="(999)999-9999">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtCoopID" class="form-label">Coop Registration ID</label>
+                                <input id="txtCoopID" class="form-control" type="text" placeholder="1234">
+                            </div>
+                        </div>    
+                        <div class="col-10 col-md-5">
+                            <div class="form-group mt-2">                    
+                                <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
+                                <input id="txtStreetAddress1" class="form-control" type="text" placeholder="123 Street Street">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
+                                <input id="txtStreetAddress2" class="form-control" type="text" placeholder="Apt. 123">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtCity" class="form-label">City</label>
+                                <input id="txtCity" class="form-control" type="text" placeholder="City">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtState" class="form-label">State</label>
+                                <input id="txtState" class="form-control" type="text" placeholder="State">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtZip" class="form-label">ZIP Code</label>
+                                <input id="txtZip" class="form-control" type="text" placeholder="Zip Code">
+                            </div>
                         </div>
+                    </div>
+
+                    <button class="col-12 btn btn-success mt-4" id="btnRegister" type="button">Register</button>
+                    <div class="col-12 d-flex justify-content-center">
+                        <a class="col-12 text-center btnToggle" data-card="Register">Return to login</a>
                     </div>
                 </form>
             </div>
         </div>
 
-        <div class="card col-12 col-md-10 col-lg-9" style="display:none;" id="divDashboard">
+        <div class="card col-12 col-md-10 col-lg-8" style="display:none;" id="divDashboard">
             <div class="card-header">
                 <h3 class="text-center">Dashboard</h3>
             </div>
             <div class="card-body">
-                <p>dashboard goes here guys</p>
             </div>
         </div>
     </div>
@@ -128,13 +147,13 @@
             let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
             if (!regexEmail.exec(txtEmail)) {
                 let blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
+                strErrorMessage = "<p>Invalid email or password.</p>";
             }
 
             let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
             if (!regexPassword.exec(txtPassword)) {
                 blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
+                strErrorMessage = "<p>Invalid email or password.</p>";
             }
             /////////////////////////////////////////////////////////////////////
 
@@ -224,7 +243,7 @@
             // Assuming IDs are length 4, may change later!
             if (txtCoopID.length != 4){
                 let blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Coop Organization ID.</p>";
+                strErrorMessage = strErrorMessage + "<p>Invalid Coop Registration ID, must be 4 digits.</p>";
             }
 
             if (blnError == true) {
