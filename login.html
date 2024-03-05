@@ -7,6 +7,7 @@
     <title>SimpleCoop Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/lib/login.css">
 </head>
 
 <body class="bg-dark">
@@ -67,7 +68,7 @@
                         <label for="txtState" class="form-label">State</label>
                         <input id="txtState" class="form-control" type="text">
 
-                        <label for="txtZip" class="form-label">Zipcode</label>
+                        <label for="txtZip" class="form-label">ZIP Code</label>
                         <input id="txtZip" class="form-control" type="text">
 
                         <label for="txtPhone" class="form-label">Phone Number</label>
@@ -120,21 +121,37 @@
             let txtEmail = $('#txtLoginEmail').val();
             let txtPassword = $('#txtLoginPassword').val();
 
+            let blnError = false;
+            let strErrorMessage = "";
+
             // TODO: Replace with actual email/password API stuff when we have it
             let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-            if (!regexEmail.exec(txtEmail)) { 
-                return;
+            if (!regexEmail.exec(txtEmail)) {
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
             }
 
             let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!regexPassword.exec(txtPassword)) { 
-                return;
+            if (!regexPassword.exec(txtPassword)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
             }
             /////////////////////////////////////////////////////////////////////
 
-            $('#divLogin').slideToggle(function () {
-                $('#divDashboard').slideToggle();
-            });
+            if (blnError == true) {
+                console.log(strErrorMessage);
+                Swal.fire({
+                    title: "Oops!",
+                    html: strErrorMessage,
+                    icon: "Error",
+                });
+            } else {
+                console.log("No errors found");
+                $('#divLogin').slideToggle(function () {
+                    $('#divDashboard').slideToggle();
+                });
+            }
+
         });
 
         $('#btnRegister').on('click', function () {
@@ -150,56 +167,79 @@
             let txtPhone = $('#txtPhone').val();
             let txtCoopID = $('#txtCoopID').val();
 
+            let blnError = false;
+            let strErrorMessage = "";
+
             let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-            if (!regexEmail.exec(txtEmail)) { 
-                return;
+            if (!regexEmail.exec(txtEmail)) {
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
             }
 
             let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!regexPassword.exec(txtPassword)) { 
-                return;
+            if (!regexPassword.exec(txtPassword)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
             }
 
             if (txtFirstName.length < 2){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid First Name.</p>";
             }
 
             if (txtLastName.length < 2){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Last Name.</p>";
             }
 
             if (txtStreetAddress1.length < 5){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Street Address.</p>";
             }
 
             // none for address 2, that is allowed to be blank
 
             if (txtCity.length < 2){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid City.</p>";
             }
 
             if (txtState.length < 2){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid State.</p>";
             }
 
             let regexZip = /\d{5}([ \-]\d{4})?/;
             if (!regexZip.exec(txtZip)){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid ZIP Code.</p>";
             }
 
             let regexPhoneNum = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
             if (!regexPhoneNum.exec(txtPhone)){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Phone Number.</p>";
             }
 
             // Assuming IDs are length 4, may change later!
             if (txtCoopID.length != 4){
-                return;
+                let blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Coop Organization ID.</p>";
             }
 
-            $('#divRegister').slideToggle(function () {
-                $('#divDashboard').slideToggle();
-            });
+            if (blnError == true) {
+                console.log(strErrorMessage);
+                Swal.fire({
+                    title: "Oops!",
+                    html: strErrorMessage,
+                    icon: "Error",
+                });
+            } else {
+                console.log("No errors found");
+                $('#divRegister').slideToggle(function () {
+                    $('#divDashboard').slideToggle();
+                });
+            }
 
         });
     </script>
