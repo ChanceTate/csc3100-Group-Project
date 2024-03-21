@@ -140,38 +140,39 @@
             let txtEmail = $('#txtLoginEmail').val();
             let txtPassword = $('#txtLoginPassword').val();
 
-            let blnError = false;
-            let strErrorMessage = "";
+            $.post("http://www.simplecoop.swollenhippo.com/sessions.php", {Email:txtEmail, Password:txtPassword}, function(result){
+                result = JSON.parse(result);
 
-            // TODO: Replace with actual email/password API stuff when we have it
-            let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-            if (!regexEmail.exec(txtEmail)) {
-                let blnError = true;
-                strErrorMessage = "<p>Invalid email or password.</p>";
-            }
+                if (result.Outcome != undefined)
+                {
+                    Swal.fire({
+                        title: "Oops!",
+                        html: "<p>Invalid email or password!</p>",
+                        icon: "error",
+                    });
 
-            let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!regexPassword.exec(txtPassword)) {
-                blnError = true;
-                strErrorMessage = "<p>Invalid email or password.</p>";
-            }
-            /////////////////////////////////////////////////////////////////////
+                    return;
+                }
 
-            if (blnError == true) {
-                console.log(strErrorMessage);
-                Swal.fire({
-                    title: "Oops!",
-                    html: strErrorMessage,
-                    icon: "Error",
-                });
-            } else {
-                console.log("No errors found");
+                sessionStorage.setItem("SessionID", result.SessionID);
                 $('#divLogin').slideToggle(function () {
                     $('#divDashboard').slideToggle();
                 });
-            }
-
+            })
         });
+
+        function checkSessionID()
+        {
+            let sessionID = sessionStorage.getItem("SessionID");
+
+            $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionID }, function(result){
+                console.log(result);
+                if (result.SessionID != sessionStorage.getItem("SessionID"))
+                {
+                    sessionStorage.removeItem("SessionID");
+                }
+            })
+        }
 
         $('#btnRegister').on('click', function () {
             let txtFirstName = $('#txtFirstName').val();
@@ -251,15 +252,84 @@
                 Swal.fire({
                     title: "Oops!",
                     html: strErrorMessage,
-                    icon: "Error",
+                    icon: "error",
                 });
             } else {
-                console.log("No errors found");
-                $('#divRegister').slideToggle(function () {
-                    $('#divDashboard').slideToggle();
-                });
-            }
+                $.getJSON("https://simplecoop.swollenhippo.com/users.php", { Email: txtEmail }, function(result) {
+                    if (result != null)
+                    {
+                        Swal.fire({
+                            title: "Oops!",
+                            html: "<p>Account with that email already exists.</p>",
+                            icon: "error",
+                        });
 
+                        return;
+                    }
+
+                    $.post(
+                    "https://simplecoop.swollenhippo.com/users.php",
+                    {
+                        Email: txtEmail,
+                        Password: txtPassword,
+                        FirstName: txtFirstName,
+                        LastName: txtLastName,
+                        CoopID: txtCoopID,
+                    },
+                    function(result) {
+                        result = JSON.parse(result);
+                        if (result.Error) {
+                            Swal.fire({
+                            title: "Oops!",
+                            html: "<p>" + result.Error + "</p>",
+                            icon: "error",
+                            });
+                        }
+                    }
+                    )
+                    $.post(
+                        "https://simplecoop.swollenhippo.com/useraddress.php",
+                        {
+                            Email: txtEmail,
+                            Street1: txtStreetAddress1,
+                            Street2: txtStreetAddress2,
+                            City: txtCity,
+                            State: txtState,
+                            ZIP: txtZip,
+                        },
+                        function(result) {
+                            result = JSON.parse(result);
+                            if (result.Error) {
+                                Swal.fire({
+                                title: "Oops!",
+                                html: "<p>" + result.Error + "</p>",
+                                icon: "error",
+                                });
+                            }
+                        }
+                    )
+
+                    $.post("http://www.simplecoop.swollenhippo.com/sessions.php", {Email:txtEmail, Password:txtPassword}, function(result){
+                        result = JSON.parse(result);
+
+                        if (result.Outcome != undefined)
+                        {
+                            Swal.fire({
+                                title: "Oops!",
+                                html: "<p>There was an issue while loggin you in, please try again!</p>",
+                                icon: "error",
+                            });
+
+                            return;
+                        }
+
+                        sessionStorage.setItem("SessionID", result.SessionID);
+                        $('#divRegister').slideToggle(function () {
+                            $('#divDashboard').slideToggle();
+                        });
+                    })
+                })
+            }
         });
     </script>
 </body>
