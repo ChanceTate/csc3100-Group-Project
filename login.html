@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-bs-theme="dark" lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -10,7 +10,7 @@
 </head>
 
 <body class="bg-dark">
-    <nav class="navbar navbar-expand-lg bg-secondary border-0 border-bottom border-primary">
+    <nav class="navbar navbar-expand-lg border-0 border-bottom border-primary" id="navTitleBar">
         <div class="container-fluid">
             <a class="navbar-brand">SwollenHippo Smart Coop</a>
         </div>
@@ -111,6 +111,7 @@
                 <h3 class="text-center">Dashboard</h3>
             </div>
             <div class="card-body">
+                <button class="btn btn-info" id="btnColorMode">Toggle Dark Mode</button>
             </div>
         </div>
     </div>
@@ -127,7 +128,32 @@
         $(document).ready(function () {
             if (sessionStorage.getItem("SessionID")) {
                 strSessionID = sessionStorage.getItem("SessionID");
-                if(sessionStorage.getItem('SessionID')){$("#divDashboard").slideToggle();}
+                
+                $.ajax({
+                    type: 'GET',
+                    url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                    data: {
+                        SessionID: strSessionID,
+                        setting: 'colormode'
+                    },
+                    error: function(e) {
+                        console.log(e);
+                        if(sessionStorage.getItem('SessionID')){$("#divDashboard").slideToggle();}
+                    },
+                    success: function(result) {
+                        console.log(result);
+                        result = JSON.parse(result);
+
+                        if (result != null) {
+                            $('html').attr('data-bs-theme', result.Value);
+                        }
+                        
+                        if(sessionStorage.getItem('SessionID')) {
+                            $("#divDashboard").slideToggle();
+                            $("#navTitleBar").slideUp();
+                        }
+                    }
+                });
             } else {
                 $("#divLogin").slideToggle();
             }
@@ -167,6 +193,7 @@
                 sessionStorage.setItem("SessionID", result.SessionID);
                 $('#divLogin').slideToggle(function () {
                     $('#divDashboard').slideToggle();
+                    $("#navTitleBar").slideUp();
                 });
             })
         });
@@ -251,7 +278,7 @@
             // Assuming IDs are length 8, may change later!
             if (txtCoopID.length != 8){
                 let blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Coop Registration ID, must be 4 digits.</p>";
+                strErrorMessage = strErrorMessage + "<p>Invalid Coop Registration ID, must be 8 digits.</p>";
             }
 
             if (blnError == true) {
@@ -333,10 +360,53 @@
                         sessionStorage.setItem("SessionID", result.SessionID);
                         $('#divRegister').slideToggle(function () {
                             $('#divDashboard').slideToggle();
+                            $("#navTitleBar").slideUp();
                         });
                     })
                 })
             }
+        });
+
+        $('#btnColorMode').on('click', function() {
+            let mode = $('html').attr('data-bs-theme');
+            if (mode == 'light') {
+                $('html').attr('data-bs-theme', 'dark');
+                mode = 'dark';
+            } else {
+                $('html').attr('data-bs-theme', 'light');
+                mode = 'light';
+            }
+
+            $.ajax({
+                type: 'DELETE',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    setting: 'colormode'
+                },
+                error: function(e) {
+                    console.log(e);
+                },
+                success: function(result) {
+                    console.log(result);
+                    $.ajax({
+                        type: 'POST',
+                        url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                        data: {
+                            SessionID: sessionStorage.getItem('SessionID'),
+                            setting: "colormode",
+                            value: mode
+                        },
+                        error: function(e) {
+                            console.log(e);
+                        },
+                        success: function(result) {
+                            console.log(result);
+                        }
+                    });
+                }
+            });
+
         });
     </script>
 </body>
