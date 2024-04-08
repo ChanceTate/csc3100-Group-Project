@@ -17,7 +17,7 @@
     </nav>
 
     <div class="d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin">
+        <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin" style="display: none">
             <div class="card-header">
                 <h3 class="text-center">Login</h3>
             </div>
@@ -122,6 +122,16 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script lang="text/javascript">
+        let strSessionID = "";
+        
+        $(document).ready(function () {
+            if (sessionStorage.getItem("SessionID")) {
+                strSessionID = sessionStorage.getItem("SessionID");
+                if(sessionStorage.getItem('SessionID')){$("#divDashboard").slideToggle();}
+            } else {
+                $("#divLogin").slideToggle();
+            }
+        });
         // Toggles login and register cards using the jQuery "is visible" tool
         $('.btnToggle').on('click', function () {
             if ($('#divLogin').is(':visible')) {
@@ -163,12 +173,9 @@
 
         function checkSessionID()
         {
-            let sessionID = sessionStorage.getItem("SessionID");
-
-            $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionID }, function(result){
+            $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: strSessionID }, function(result){
                 console.log(result);
-                if (result.SessionID != sessionStorage.getItem("SessionID"))
-                {
+                if (result.SessionID != sessionStorage.getItem("SessionID")) {
                     sessionStorage.removeItem("SessionID");
                 }
             })
@@ -241,8 +248,8 @@
                 strErrorMessage = strErrorMessage + "<p>Invalid Phone Number.</p>";
             }
 
-            // Assuming IDs are length 4, may change later!
-            if (txtCoopID.length != 4){
+            // Assuming IDs are length 8, may change later!
+            if (txtCoopID.length != 8){
                 let blnError = true;
                 strErrorMessage = strErrorMessage + "<p>Invalid Coop Registration ID, must be 4 digits.</p>";
             }
