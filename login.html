@@ -16,6 +16,7 @@
         <div class="container-fluid">
             <a class="navbar-brand">SwollenHippo Smart Coop</a>
         </div>
+        <button id="btnLogout" class="btn btn-danger">Logout</button>
         <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
             <i class="fa-solid fa-moon fs-4"></i>
             <i style="display: none" class="fa-solid fa-sun fs-4"></i>
@@ -137,7 +138,7 @@
                     </div>
                 </div>
             </div>
-
+                
         </div>
     </div>
 
@@ -271,6 +272,21 @@
                 });
             }
         });
+
+        // Logout button functionality
+        $('#btnLogout').on('click',function(){
+            $.ajax({
+                url: 'https://www.thesimplehomestead.com/simpletime/sessions.php',
+                type: 'DELETE',
+                data: {SessionID:sessionStorage.getItem('SessionID')},
+                success: function(result) {
+                    sessionStorage.removeItem('SessionID');
+                    $('#divDashboard').slideUp(function(){
+                        $('#divLogin').slideDown();
+                    })
+                }
+            });
+        })
 
         // Login button functionality
         $('#btnLogin').on('click', function () {
