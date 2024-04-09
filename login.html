@@ -1,16 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-bs-theme="light" lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimpleCoop Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/simplex/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/d7eaa0fcbe.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="css/lib/login.css">
 </head>
 
-<body class="bg-dark">
-    <div class="d-flex justify-content-center align-items-center min-vh-100">
-        <div class="card col-10 col-sm-7 col-md-5 col-lg-4" id="divLogin">
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand border-0 border-bottom border-primary" id="navTitleBar">
+        <div class="container-fluid">
+            <a class="navbar-brand">SwollenHippo Smart Coop</a>
+        </div>
+        <button id="btnLogout" class="btn btn-danger">Logout</button>
+        <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
+            <i class="fa-solid fa-moon fs-4"></i>
+            <i style="display: none" class="fa-solid fa-sun fs-4"></i>
+        </button>
+    </nav>
+    <!-- Main Content -->
+    <div class="d-flex justify-content-center align-items-center mt-5">
+        <!-- Login -->
+        <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin" style="display: none">
             <div class="card-header">
                 <h3 class="text-center">Login</h3>
             </div>
@@ -18,86 +33,267 @@
                 <form>
                     <div class="form-group mt-4">
                         <label for="txtLoginEmail" class="form-label">Email</label>
-                        <input id="txtLoginEmail" class="form-control" type="email">
+                        <input id="txtLoginEmail" class="form-control" type="email" placeholder="johndoe@gmail.com">
                     </div>
                     <div class="form-group mt-4">
                         <label for="txtLoginPassword" class="form-label">Password</label>
-                        <input id="txtLoginPassword" class="form-control" type="password">
+                        <input id="txtLoginPassword" class="form-control" type="password" placeholder="Password">
                     </div>
 
                     <button class="col-12 btn btn-success mt-4" id="btnLogin" type="button">Login</button>
                     <div class="col-12 d-flex justify-content-center">
-                        <a class="col-12 text-center btnToggle" data-card="Login">Unregistered? Click here to create an
+                        <a href="#" class="col-12 text-center btnToggle" data-card="Login">Unregistered? Click here to
+                            create an
                             account.</a>
                     </div>
                 </form>
             </div>
         </div>
-
-        <div class="card col-10 col-sm-7 col-md-5 col-lg-4 my-4" id="divRegister" style="display:none;">
+        <!-- Registration -->
+        <div class="card border-primary col-10 col-md-7 col-lg-5 my-4" id="divRegister" style="display:none;">
             <div class="card-header">
                 <h3 class="text-center">Registration</h3>
             </div>
             <div class="card-body">
                 <form>
-                    <div class="form-group">
-
-                        <label for="txtFirstName" class="form-label">First Name</label>
-                        <input id="txtFirstName" class="form-control">
-
-                        <label for="txtlastName" class="form-label">Last Name</label>
-                        <input id="txtLastName" class="form-control">
-
-                        <label for="txtRegisterEmail" class="form-label">Email</label>
-                        <input id="txtRegisterEmail" class="form-control">
-
-                        <label for="txtRegisterPass" class="form-label">Password</label>
-                        <input id="txtRegisterPass" class="form-control">
-
-                        <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
-                        <input id="txtStreetAddress1" class="form-control">
-
-                        <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
-                        <input id="txtStreetAddress2" class="form-control">
-
-                        <label for="txtCity" class="form-label">City</label>
-                        <input id="txtCity" class="form-control">
-
-                        <label for="txtState" class="form-label">State</label>
-                        <input id="txtState" class="form-control">
-
-                        <label for="txtZip" class="form-label">Zipcode</label>
-                        <input id="txtZip" class="form-control">
-
-                        <label for="txtPhone" class="form-label">Phone Number</label>
-                        <input id="txtPhone" class="form-control">
-
-                        <label for="txtCoopID" class="form-label">Coop Orginization ID</label>
-                        <input id="txtCoopID" class="form-control">
-
-                        <button class="col-12 btn btn-success mt-4" id="btnRegister" type="button">Register</button>
-                        <div class="col-12 d-flex justify-content-center">
-                            <a class="col-12 text-center btnToggle" data-card="Register">Return to login</a>
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-evenly align-items-center align-items-md-start">
+                        <div class="col-10 col-md-5">
+                            <div class="form-group mt-2">
+                                <label for="txtFirstName" class="form-label">First Name</label>
+                                <input id="txtFirstName" class="form-control" type="text" placeholder="John">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtLastName" class="form-label">Last Name</label>
+                                <input id="txtLastName" class="form-control" type="text" placeholder="Doe">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtRegisterEmail" class="form-label">Email</label>
+                                <input id="txtRegisterEmail" class="form-control" type="email"
+                                    placeholder="johndoe@gmail.com">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtRegisterPassword" class="form-label">Password</label>
+                                <input id="txtRegisterPassword" class="form-control" type="password"
+                                    placeholder="Password">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtPhone" class="form-label">Phone Number</label>
+                                <input id="txtPhone" class="form-control" type="text" placeholder="(999)999-9999">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtCoopID" class="form-label">Coop Registration ID</label>
+                                <input id="txtCoopID" class="form-control" type="text" placeholder="1234">
+                            </div>
                         </div>
+                        <div class="col-10 col-md-5">
+                            <div class="form-group mt-2">
+                                <label for="txtStreetAddress1" class="form-label">Street Address 1</label>
+                                <input id="txtStreetAddress1" class="form-control" type="text"
+                                    placeholder="123 Street Street">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtStreetAddress2" class="form-label">Street Address 2</label>
+                                <input id="txtStreetAddress2" class="form-control" type="text" placeholder="Apt. 123">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtCity" class="form-label">City</label>
+                                <input id="txtCity" class="form-control" type="text" placeholder="City">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtState" class="form-label">State</label>
+                                <input id="txtState" class="form-control" type="text" placeholder="State">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="txtZip" class="form-label">ZIP Code</label>
+                                <input id="txtZip" class="form-control" type="text" placeholder="Zip Code">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="col-12 btn btn-success mt-4" id="btnRegister" type="button">Register</button>
+                    <div class="col-12 d-flex justify-content-center">
+                        <a href="#" class="col-12 text-center btnToggle" data-card="Register">Return to login</a>
                     </div>
                 </form>
             </div>
         </div>
-
-        <div class="card col-12 col-md-10 col-lg-9" style="display:none;" id="divDashboard">
-            <div class="card-header">
-                <h3 class="text-center">Dashboard</h3>
+        <!-- Dashboard -->
+        <div class="col-12 px-5 pb-5" style="display:none;" id="divDashboard">
+            <div class="card col-xl-5 col-lg-6 col-12 p-3">
+                <h2 class="text-center">Weather</h2>
+                <div class="d-flex justify-content-between px-2 mt-2">
+                  <div>
+                    <p id="weatherCondition">Loading...</p>
+                  </div>
+                  <div class="d-flex">
+                    <hr class="vr me-4"></hr>
+                    <div>
+                      <div class="mb-2">
+                        <p id="weatherLocation">Cookeville</p>  <p id="weatherDate">Loading...</p>
+                      </div>
+                      <p id="weatherTemperature">Loading...</p>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="updateWeather()">Update Weather</button> </div>
+            <div class="card col-xl-5 col-lg-6 col-12 p-3">
+                <h3 class="text-center mb-4">Egg Counter</h3>
+                <div>
+                    <div class="input-group mb-4 d-flex justify-content-center">
+                        <input class="rounded-3 col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
+                            aria-label="Number of eggs to log">
+                        <button id="btnEggs" class="btn btn-primary">Log Eggs</button>
+                    </div>
+                    <div class="d-flex justify-content-center align-items-center">
+                        <p class="d-sm-block d-none my-auto">Total eggs logged in&nbsp;</p>
+                        <p class="my-auto">last</p>
+                        <input id="numEggsFilter" type="number" class="mx-2 col-2 rounded-3"
+                            aria-label="Eggs logged in last blank days">
+                        <p class="my-auto">days:</p>
+                        <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <p>dashboard goes here guys</p>
-            </div>
+                
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="weather-data.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+    <script lang="text/javascript">
+
+        // Weather widget functionality
+        function updateWeather() {
+            // Get random weather data
+            const temperature = getRandomTemperature().toFixed(1); // Round to one decimal
+            const humidity = getRandomHumidity().toFixed(1);
+            const observationDatetime = getRandomObservationDatetime();
+            const date = new Date(observationDatetime); // Convert to Date object
+            const weatherConditions = ["Sunny", "Raining", "Partly Cloudy"];
+
+            // Update the widget elements
+            const randomIndex = Math.floor(Math.random() * weatherConditions.length);
+            document.getElementById("weatherCondition").textContent = weatherConditions[randomIndex];
+            document.getElementById("weatherDate").textContent = date.toLocaleDateString();
+            document.getElementById("weatherTemperature").textContent = temperature + "°F";
+        }
+
+        // Updates Session's LastUsedDateTime
+        function updateSession() {
+            $.ajax({
+                type: 'PUT',
+                url: "http://www.simplecoop.swollenhippo.com/sessions.php",
+                data: { SessionID: sessionStorage.getItem("SessionID") },
+                error: function (e) {
+                    console.log(e);
+                },
+            });
+        }
+
+        function filterEggs() {
+            let intDays = $('#numEggsFilter').val();
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/eggs.php",
+                data: {
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    days: intDays
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    let intTotalEggs = 0;
+                    result.forEach(log => {
+                        intTotalEggs += log.Harvested;
+                    });
+                    $('#txtEggsTotal').text(intTotalEggs);
+                }
+            });
+
+        }
+
+        $(document).ready(function () {
+            let intDaysSinceAccountCreation = 0;
+            let strEmail = "";
+            // Checks if there is anything in sessionStorage
+            if (sessionStorage.getItem("SessionID")) {
+                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
+                    if (result.SessionID != sessionStorage.getItem("SessionID")) {
+                        sessionStorage.removeItem("SessionID");
+                        strEmail = result.Email;
+                    }
+                });
+                // Checks if the SessionID is valid
+                if (sessionStorage.getItem("SessionID")) {
+                    $.ajax({
+                        type: 'GET',
+                        url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                        data: {
+                            SessionID: sessionStorage.getItem("SessionID"),
+                            setting: 'colormode'
+                        },
+                        error: function (e) {
+                            console.log(e);
+                            updateSession();
+                            $("#divDashboard").slideToggle();
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+
+                            $.ajax({
+                                type: 'GET',
+                                url: "http://www.simplecoop.swollenhippo.com/users.php",
+                                data: {
+                                    Email: strEmail
+                                },
+                                error: function (e) {
+                                    console.log(e);
+                                },
+                                success: function (result) {
+                                    result = JSON.parse(result);
+                                    let strStartDate = result.EstablishedDate;
+                                    let dtCreationDate = new Date(strStartDate);
+                                    let dtCurrentDate = new Date();
+                                    intDaysSinceAccountCreation = Math.floor((dtCurrentDate - dtCreationDate) / (1000 * 60 * 60 * 24));
+                                }
+                            })
+
+                            if (result != null) {
+                                let strMode = result.Value;
+                                if (strMode == 'dark') {
+                                    $('html').attr('data-bs-theme', 'dark');
+                                    $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                                    $(".fa-moon").hide();
+                                    $(".fa-sun").show();
+                                } else {
+                                    $('html').attr('data-bs-theme', 'light');
+                                    $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
+                                    $(".fa-moon").show();
+                                    $(".fa-sun").hide();
+                                }
+                            }
+                            updateSession();
+                            $("#numEggsFilter").val(intDaysSinceAccountCreation);
+                            filterEggs();
+                            $("#divDashboard").slideToggle();
+                        }
+                    });
+                } else {
+                    $("#divLogin").slideToggle();
+                }
+            } else {
+                $("#divLogin").slideToggle();
+            }
+        });
+
         // Toggles login and register cards using the jQuery "is visible" tool
         $('.btnToggle').on('click', function () {
             if ($('#divLogin').is(':visible')) {
@@ -112,38 +308,342 @@
             }
         });
 
-        $('#btnLogin').on('click', function () {
-            let loginEmail = $('#txtLoginEmail').val();
-            let loginPassword = $('#txtLoginPassword').val();
-
-            if (loginEmail.length < 7) { // do regex here later
-                return;
-            }
-
-            if (loginPassword.length < 1) { // also do regex here
-                return;
-            }
-
-            $('#divLogin').slideToggle(function () {
-                $('#divDashboard').slideToggle();
+        // Logout button functionality
+        $('#btnLogout').on('click',function(){
+            $.ajax({
+                url: 'https://www.thesimplehomestead.com/simpletime/sessions.php',
+                type: 'DELETE',
+                data: {SessionID:sessionStorage.getItem('SessionID')},
+                success: function(result) {
+                    sessionStorage.removeItem('SessionID');
+                    $('#divDashboard').slideUp(function(){
+                        $('#divLogin').slideDown();
+                    })
+                }
             });
+        })
+
+        // Login button functionality
+        $('#btnLogin').on('click', function () {
+            let strEmail = $('#txtLoginEmail').val();
+            let strPassword = $('#txtLoginPassword').val();
+            let intDaysSinceAccountCreation = 0;
+
+            $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
+                result = JSON.parse(result);
+
+                if (result.Outcome != undefined) {
+                    Swal.fire({
+                        title: "Oops!",
+                        html: "<p>Invalid email or password!</p>",
+                        icon: "error",
+                    });
+
+                    return;
+                }
+
+                // Saves dark mode preference
+                if ($("html").attr('data-bs-theme') == "dark") {
+                    $("#btnColorMode").click();
+                    $("#btnColorMode").click();
+                }
+
+                // Gets the account creation date
+                $.ajax({
+                    type: 'GET',
+                    url: "http://www.simplecoop.swollenhippo.com/users.php",
+                    data: {
+                        Email: strEmail
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        let strStartDate = result.EstablishedDate;
+                        let dtCreationDate = new Date(strStartDate);
+                        let dtCurrentDate = new Date();
+                        intDaysSinceAccountCreation = Math.floor((dtCurrentDate - dtCreationDate) / (1000 * 60 * 60 * 24));
+                    }
+                })
+
+                sessionStorage.setItem("SessionID", result.SessionID);
+                $("#numEggsFilter").val(intDaysSinceAccountCreation);
+                filterEggs();
+                $('#divLogin').slideToggle(function () {
+                    $('#divDashboard').slideToggle();
+                });
+            })
         });
 
-        $('#btnRegister').on('click', function() {
+        // Register button functionality
+        $('#btnRegister').on('click', function () {
+            let strFirstName = $('#txtFirstName').val();
+            let strLastName = $('#txtLastName').val();
+            let strEmail = $('#txtRegisterEmail').val();
+            let strPassword = $('#txtRegisterPassword').val();
+            let strStreetAddress1 = $('#txtStreetAddress1').val();
+            let strStreetAddress2 = $('#txtStreetAddress2').val();
+            let strCity = $('#txtCity').val();
+            let strState = $('#txtState').val();
+            let strZip = $('#txtZip').val();
+            let strPhone = $('#txtPhone').val();
+            let strCoopID = $('#txtCoopID').val();
 
-            let txtFirstName = $('#txtFirstName').val();
-            let txtlastName = $('#txtlastName').val();
-            let txtRegisterEmail = $('#txtRegisterEmail').val();
-            let txtRegisterPass = $('#txtRegisterPass').val();
-            let txtStreetAddress1 = $('#txtStreetAddress1').val();
-            let txtStreetAddress2 = $('#txtStreetAddress2').val();
-            let txtCity = $('#txtCity').val();
-            let txtState = $('#txtState').val();
-            let txtZip = $('#txtZip').val();
-            let txtPhone = $('#txtPhone').val();
-            let txtCoopID = $('#txtCoopID').val();
-            
+            let blnError = false;
+            let strErrorMessage = "";
+
+            let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+            if (!regexEmail.exec(strEmail)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
+            }
+
+            let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+            if (!regexPassword.exec(strPassword)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
+            }
+
+            if (strFirstName.length < 2) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid First Name.</p>";
+            }
+
+            if (strLastName.length < 2) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Last Name.</p>";
+            }
+
+            if (strStreetAddress1.length < 5) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Street Address.</p>";
+            }
+
+            // none for address 2, that is allowed to be blank
+
+            if (strCity.length < 2) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid City.</p>";
+            }
+
+            if (strState.length < 2) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid State.</p>";
+            }
+
+            let regexZip = /\d{5}([ \-]\d{4})?/;
+            if (!regexZip.exec(strZip)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid ZIP Code.</p>";
+            }
+
+            let regexPhoneNum = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+            if (!regexPhoneNum.exec(strPhone)) {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Invalid Phone Number.</p>";
+            }
+
+            // Assuming IDs are length 8, may change later!
+            if (strCoopID !== 'S402HG2J') {
+                blnError = true;
+                strErrorMessage = strErrorMessage + "<p>Coop ID should be S402HG2J</p>";
+            }
+
+            if (blnError == true) {
+                console.log(strErrorMessage);
+                Swal.fire({
+                    title: "Oops!",
+                    html: strErrorMessage,
+                    icon: "error",
+                });
+            } else {
+                $.getJSON("https://simplecoop.swollenhippo.com/users.php", { Email: strEmail }, function (result) {
+                    if (result != null) {
+                        Swal.fire({
+                            title: "Oops!",
+                            html: "<p>Account with that email already exists.</p>",
+                            icon: "error",
+                        });
+
+                        return;
+                    }
+
+                    $.post(
+                        "https://simplecoop.swollenhippo.com/users.php",
+                        {
+                            Email: strEmail,
+                            Password: strPassword,
+                            FirstName: strFirstName,
+                            LastName: strLastName,
+                            CoopID: strCoopID,
+                        },
+                        function (result) {
+                            result = JSON.parse(result);
+                            if (result.Error) {
+                                Swal.fire({
+                                    title: "Oops!",
+                                    html: "<p>" + result.Error + "</p>",
+                                    icon: "error",
+                                });
+                            }
+                        }
+                    )
+                    $.post(
+                        "https://simplecoop.swollenhippo.com/useraddress.php",
+                        {
+                            Email: strEmail,
+                            Street1: strStreetAddress1,
+                            Street2: strStreetAddress2,
+                            City: strCity,
+                            State: strState,
+                            ZIP: strZip,
+                        },
+                        function (result) {
+                            result = JSON.parse(result);
+                            if (result.Error) {
+                                Swal.fire({
+                                    title: "Oops!",
+                                    html: "<p>" + result.Error + "</p>",
+                                    icon: "error",
+                                });
+                            }
+                        }
+                    )
+
+                    $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
+                        result = JSON.parse(result);
+
+                        if (result.Outcome != undefined) {
+                            Swal.fire({
+                                title: "Oops!",
+                                html: "<p>There was an issue while loggin you in, please try again!</p>",
+                                icon: "error",
+                            });
+
+                            return;
+                        }
+
+                        // Saves dark mode preference
+                        if ($("html").attr('data-bs-theme') == "dark") {
+                            $("#btnColorMode").click();
+                            $("#btnColorMode").click();
+                        }
+
+                        sessionStorage.setItem("SessionID", result.SessionID);
+                        $('#divRegister').slideToggle(function () {
+                            $('#divDashboard').slideToggle();
+                        });
+                    })
+                })
+            }
         });
+
+        // Dark mode toggle
+        $('#btnColorMode').on('click', function () {
+            let strMode = $('html').attr('data-bs-theme');
+            if (strMode == 'light') {
+                $('html').attr('data-bs-theme', 'dark');
+                $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                $(".fa-moon").hide();
+                $(".fa-sun").show();
+                $(".card").removeClass('border-dark');
+                strMode = 'dark';
+            } else {
+                $('html').attr('data-bs-theme', 'light');
+                $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
+                $(".fa-moon").show();
+                $(".fa-sun").hide();
+                $(".card").addClass('border-dark');
+                strMode = 'light';
+            }
+
+            if (sessionStorage.getItem('SessionID')) {
+                updateSession();
+
+                $.ajax({
+                    type: 'DELETE',
+                    url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID'),
+                        setting: 'colormode'
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                            data: {
+                                SessionID: sessionStorage.getItem('SessionID'),
+                                setting: "colormode",
+                                value: strMode
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            },
+                        });
+                    }
+                });
+            }
+
+        });
+
+        // Log eggs
+        $('#btnEggs').on('click', function () {
+            let intEggs = $('#numEggs').val();
+            $.ajax({
+                type: 'POST',
+                url: "http://www.simplecoop.swollenhippo.com/eggs.php",
+                data: {
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    eggs: intEggs,
+                    observationDateTime: new Date().toISOString()
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    filterEggs();
+                }
+            });
+
+        });
+
+        // Filter eggs
+        $('#numEggsFilter').on('change', function () {
+            filterEggs();
+        });
+
+        function getRandomObservationDatetime() {
+            // Get the current date
+            var currentDate = new Date();     // Generate a random number of days between 0 and 100
+            var randomDays = Math.floor(Math.random() * 101);     // Calculate the random date within the specified range
+            var randomDate = new Date(currentDate);
+            randomDate.setDate(currentDate.getDate() - randomDays);     // Format the date in ISO string format
+            var observationDatetime = randomDate.toISOString();     return observationDatetime;
+        } function getRandomTemperature() {
+            // Generate a random temperature between 42 and 90
+            return Math.random() * (90 - 42) + 42;
+        } function getRandomHumidity() {
+            // Generate a random humidity between 30 and 98
+            return Math.random() * (98 - 30) + 30;
+        } // Loop to execute the code block 100 times
+        for (var i = 0; i < 100; i++) {
+            // The SessionID and additional data with random temperature, humidity, and observationdatetime
+            var requestData = {
+                SessionID: sessionStorage.getItem('SessionID'),
+                temperature: getRandomTemperature(),
+                observationDateTime: getRandomObservationDatetime(),
+                humidity: getRandomHumidity()
+            };     // Making the AJAX request using POST
+            $.post('https://simplecoop.swollenhippo.com/environment.php', requestData, function(result) {
+                console.log(result);
+            });
+    }
+
+
     </script>
 </body>
 
