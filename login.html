@@ -16,7 +16,7 @@
         <div class="container-fluid">
             <a class="navbar-brand">SwollenHippo Smart Coop</a>
         </div>
-        <button id="btnLogout" class="btn btn-danger">Logout</button>
+        <button id="btnLogout" class="btn btn-primary">Logout</button>
         <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
             <i class="fa-solid fa-moon fs-4"></i>
             <i style="display: none" class="fa-solid fa-sun fs-4"></i>
@@ -120,28 +120,31 @@
         </div>
         <!-- Dashboard -->
         <div class="col-12 px-5 pb-5" style="display:none;" id="divDashboard">
-            <div class="card col-xl-5 col-lg-6 col-12 p-3">
+            <div class="card border-primary col-xl-5 col-lg-6 col-12 p-3">
                 <h2 class="text-center">Weather</h2>
                 <div class="d-flex justify-content-between px-2 mt-2">
-                  <div>
-                    <p id="weatherCondition">Loading...</p>
-                  </div>
-                  <div class="d-flex">
-                    <hr class="vr me-4"></hr>
                     <div>
-                      <div class="mb-2">
-                        <p id="weatherLocation">Cookeville</p>  <p id="weatherDate">Loading...</p>
-                      </div>
-                      <p id="weatherTemperature">Loading...</p>
+                        <p id="weatherCondition">Loading...</p>
                     </div>
-                  </div>
+                    <div class="d-flex">
+                        <hr class="vr me-4">
+                        </hr>
+                        <div>
+                            <div class="mb-2">
+                                <p id="weatherLocation">Cookeville</p>
+                                <p id="weatherDate">Loading...</p>
+                            </div>
+                            <p id="weatherTemperature">Loading...</p>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="updateWeather()">Update Weather</button> </div>
-            <div class="card col-xl-5 col-lg-6 col-12 p-3">
+                <button onclick="updateWeather()">Update Weather</button>
+            </div>
+            <div class="card border-primary col-xl-5 col-lg-6 col-12 p-3">
                 <h3 class="text-center mb-4">Egg Counter</h3>
                 <div>
                     <div class="input-group mb-4 d-flex justify-content-center">
-                        <input class="rounded-3 col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
+                        <input class="rounded-start col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
                             aria-label="Number of eggs to log">
                         <button id="btnEggs" class="btn btn-primary">Log Eggs</button>
                     </div>
@@ -164,28 +167,27 @@
             </div>
 
             <!-- Table -->
-        <div class="col-12 px-5 pb-5" style="display:none;" id="divTable">
-            <h3 class="text-center mb-4">Observations</h3>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Observation Date (YYYY-MM-DD)</th>
-                        <th>Temperature (F)</th>
-                        <th>Humidity %</th>
-                    </tr>
-                </thead>
-                <tbody id="observationTableBody">
-                    <!-- Observation data will be here-->
-                </tbody>
-            </table>
-        </div>
-                
-        </div>
-                
-        </div>
-    </div>
+            <div class="col-12 px-5 pb-5" style="display:none;" id="divTable">
+                <h3 class="text-center mb-4">Observations</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Observation Date (YYYY-MM-DD)</th>
+                            <th>Temperature (F)</th>
+                            <th>Humidity %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="observationTableBody">
+                        <!-- Observation data will be here-->
+                    </tbody>
+                </table>
+            </div>
 
-    <script src="weather-data.js"></script>
+        </div>
+
+    </div>
+    </div>
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
@@ -254,67 +256,66 @@
                 $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
                     if (result.SessionID != sessionStorage.getItem("SessionID")) {
                         sessionStorage.removeItem("SessionID");
-                        strEmail = result.Email;
+                    }
+                    strEmail = result.Email;
+
+                    if (sessionStorage.getItem("SessionID")) {
+                        $.ajax({
+                            type: 'GET',
+                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                            data: {
+                                SessionID: sessionStorage.getItem("SessionID"),
+                                setting: 'colormode'
+                            },
+                            error: function (e) {
+                                console.log(e);
+                                updateSession();
+                                $("#divDashboard").slideToggle();
+                            },
+                            success: function (result) {
+                                result = JSON.parse(result);
+
+                                if (result != null) {
+                                    let strMode = result.Value;
+                                    if (strMode == 'dark') {
+                                        $('html').attr('data-bs-theme', 'dark');
+                                        $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                                        $(".fa-moon").hide();
+                                        $(".fa-sun").show();
+                                    } else {
+                                        $('html').attr('data-bs-theme', 'light');
+                                        $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
+                                        $(".fa-moon").show();
+                                        $(".fa-sun").hide();
+                                    }
+                                }
+
+                                $.ajax({
+                                    type: 'GET',
+                                    url: "http://www.simplecoop.swollenhippo.com/users.php",
+                                    data: {
+                                        Email: strEmail
+                                    },
+                                    error: function (e) {
+                                        console.log(e);
+                                    },
+                                    success: function (result) {
+                                        result = JSON.parse(result);
+                                        let dtCreationDate = new Date(result.EstablishedDate);
+                                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
+                                        updateSession();
+                                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
+                                        filterEggs();
+                                        $("#divDashboard").slideToggle();
+                                    }
+                                })
+
+                            }
+                        });
+                    } else {
+                        $("#divLogin").slideToggle();
                     }
                 });
-                // Checks if the SessionID is valid
-                if (sessionStorage.getItem("SessionID")) {
-                    $.ajax({
-                        type: 'GET',
-                        url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                        data: {
-                            SessionID: sessionStorage.getItem("SessionID"),
-                            setting: 'colormode'
-                        },
-                        error: function (e) {
-                            console.log(e);
-                            updateSession();
-                            $("#divDashboard").slideToggle();
-                        },
-                        success: function (result) {
-                            result = JSON.parse(result);
-
-                            $.ajax({
-                                type: 'GET',
-                                url: "http://www.simplecoop.swollenhippo.com/users.php",
-                                data: {
-                                    Email: strEmail
-                                },
-                                error: function (e) {
-                                    console.log(e);
-                                },
-                                success: function (result) {
-                                    result = JSON.parse(result);
-                                    let strStartDate = result.EstablishedDate;
-                                    let dtCreationDate = new Date(strStartDate);
-                                    let dtCurrentDate = new Date();
-                                    intDaysSinceAccountCreation = Math.floor((dtCurrentDate - dtCreationDate) / (1000 * 60 * 60 * 24));
-                                }
-                            })
-
-                            if (result != null) {
-                                let strMode = result.Value;
-                                if (strMode == 'dark') {
-                                    $('html').attr('data-bs-theme', 'dark');
-                                    $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                                    $(".fa-moon").hide();
-                                    $(".fa-sun").show();
-                                } else {
-                                    $('html').attr('data-bs-theme', 'light');
-                                    $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
-                                    $(".fa-moon").show();
-                                    $(".fa-sun").hide();
-                                }
-                            }
-                            updateSession();
-                            $("#numEggsFilter").val(intDaysSinceAccountCreation);
-                            filterEggs();
-                            $("#divDashboard").slideToggle();
-                        }
-                    });
-                } else {
-                    $("#divLogin").slideToggle();
-                }
             } else {
                 $("#divLogin").slideToggle();
             }
@@ -335,14 +336,15 @@
         });
 
         // Logout button functionality
-        $('#btnLogout').on('click',function(){
+        $('#btnLogout').on('click', function () {
             $.ajax({
-                url: 'https://www.thesimplehomestead.com/simpletime/sessions.php',
+                url: 'http://www.thesimplehomestead.com/simpletime/sessions.php',
                 type: 'DELETE',
-                data: {SessionID:sessionStorage.getItem('SessionID')},
-                success: function(result) {
+                data: { SessionID: sessionStorage.getItem('SessionID') },
+                success: function (result) {
                     sessionStorage.removeItem('SessionID');
-                    $('#divDashboard').slideUp(function(){
+
+                    $('#divDashboard').slideUp(function () {
                         $('#divLogin').slideDown();
                     })
                 }
@@ -367,12 +369,13 @@
 
                     return;
                 }
+                sessionStorage.setItem("SessionID", result.SessionID);
 
                 // Saves dark mode preference
-                if ($("html").attr('data-bs-theme') == "dark") {
+                $("#btnColorMode").click();
+                setTimeout(function () {
                     $("#btnColorMode").click();
-                    $("#btnColorMode").click();
-                }
+                }, 500);
 
                 // Gets the account creation date
                 $.ajax({
@@ -386,19 +389,18 @@
                     },
                     success: function (result) {
                         result = JSON.parse(result);
-                        let strStartDate = result.EstablishedDate;
-                        let dtCreationDate = new Date(strStartDate);
-                        let dtCurrentDate = new Date();
-                        intDaysSinceAccountCreation = Math.floor((dtCurrentDate - dtCreationDate) / (1000 * 60 * 60 * 24));
+                        let dtCreationDate = new Date(result.EstablishedDate);
+                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
+                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
+                        filterEggs();
+                        $('#txtLoginEmail').val('');
+                        $('#txtLoginPassword').val('');
+                        $('#divLogin').slideToggle(function () {
+                            $('#divDashboard').slideToggle();
+                        });
                     }
                 })
 
-                sessionStorage.setItem("SessionID", result.SessionID);
-                $("#numEggsFilter").val(intDaysSinceAccountCreation);
-                filterEggs();
-                $('#divLogin').slideToggle(function () {
-                    $('#divDashboard').slideToggle();
-                });
             })
         });
 
@@ -484,7 +486,7 @@
                     icon: "error",
                 });
             } else {
-                $.getJSON("https://simplecoop.swollenhippo.com/users.php", { Email: strEmail }, function (result) {
+                $.getJSON("http://simplecoop.swollenhippo.com/users.php", { Email: strEmail }, function (result) {
                     if (result != null) {
                         Swal.fire({
                             title: "Oops!",
@@ -496,7 +498,7 @@
                     }
 
                     $.post(
-                        "https://simplecoop.swollenhippo.com/users.php",
+                        "http://simplecoop.swollenhippo.com/users.php",
                         {
                             Email: strEmail,
                             Password: strPassword,
@@ -516,7 +518,7 @@
                         }
                     )
                     $.post(
-                        "https://simplecoop.swollenhippo.com/useraddress.php",
+                        "http://simplecoop.swollenhippo.com/useraddress.php",
                         {
                             Email: strEmail,
                             Street1: strStreetAddress1,
@@ -551,10 +553,22 @@
                         }
 
                         // Saves dark mode preference
-                        if ($("html").attr('data-bs-theme') == "dark") {
+                        $("#btnColorMode").click();
+                        setTimeout(function () {
                             $("#btnColorMode").click();
-                            $("#btnColorMode").click();
-                        }
+                        }, 500);
+
+                        $('#txtFirstName').val('');
+                        $('#txtLastName').val('');
+                        $('#txtRegisterEmail').val('');
+                        $('#txtRegisterPassword').val('');
+                        $('#txtStreetAddress1').val('');
+                        $('#txtStreetAddress2').val('');
+                        $('#txtCity').val('');
+                        $('#txtState').val('');
+                        $('#txtZip').val('');
+                        $('#txtPhone').val('');
+                        $('#txtCoopID').val('');
 
                         sessionStorage.setItem("SessionID", result.SessionID);
                         $('#divRegister').slideToggle(function () {
@@ -567,20 +581,19 @@
 
         // Dark mode toggle
         $('#btnColorMode').on('click', function () {
+            $("#btnColorMode").prop('disabled', true);
             let strMode = $('html').attr('data-bs-theme');
             if (strMode == 'light') {
                 $('html').attr('data-bs-theme', 'dark');
                 $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
                 $(".fa-moon").hide();
                 $(".fa-sun").show();
-                $(".card").removeClass('border-dark');
                 strMode = 'dark';
             } else {
                 $('html').attr('data-bs-theme', 'light');
                 $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
                 $(".fa-moon").show();
                 $(".fa-sun").hide();
-                $(".card").addClass('border-dark');
                 strMode = 'light';
             }
 
@@ -609,9 +622,14 @@
                             error: function (e) {
                                 console.log(e);
                             },
+                            success: function (result) {
+                                $("#btnColorMode").prop('disabled', false);
+                            }
                         });
                     }
                 });
+            } else {
+                $("#btnColorMode").prop('disabled', false);
             }
 
         });
@@ -648,7 +666,7 @@
             var randomDays = Math.floor(Math.random() * 101);     // Calculate the random date within the specified range
             var randomDate = new Date(currentDate);
             randomDate.setDate(currentDate.getDate() - randomDays);     // Format the date in ISO string format
-            var observationDatetime = randomDate.toISOString();     return observationDatetime;
+            var observationDatetime = randomDate.toISOString(); return observationDatetime;
         }
 
         // Function to generate a random observation datetime in the format YYYY-MM-DD
@@ -657,19 +675,19 @@
             var randomDays = Math.floor(Math.random() * 101);
             var randomDate = new Date(currentDate);
             randomDate.setDate(currentDate.getDate() - randomDays);
-            
+
             var randomHour = Math.floor(Math.random() * 24);
             var randomMinute = Math.floor(Math.random() * 60);
             var randomSecond = Math.floor(Math.random() * 60);
-            
+
             randomDate.setHours(randomHour, randomMinute, randomSecond);
-            
+
             // Format date as YYYY-MM-DD
             var formattedDate = randomDate.toISOString().split('T')[0];
-            
+
             // Format time as HH:MM
             var formattedTime = randomDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
+
             return formattedDate + ' T ' + formattedTime;
         }
 
@@ -722,7 +740,7 @@
                     humidity: observation.humidity
                 };
 
-                $.post('https://simplecoop.swollenhippo.com/environment.php', requestData, function(result) {
+                $.post('https://simplecoop.swollenhippo.com/environment.php', requestData, function (result) {
                     console.log(result);
                 });
             });
@@ -733,7 +751,7 @@
 
         $('#btnLogObservation').on('click', function () {
             var currentDate = new Date();
-            
+
             //Format date and time into YYYY-MM-DD
             var formattedDate = currentDate.toISOString().split('T')[0];
             var formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -752,7 +770,7 @@
             );
         });
 
-        $('#btnViewTable').on('click', function() {
+        $('#btnViewTable').on('click', function () {
             $('#divTable').show();
         });
 
