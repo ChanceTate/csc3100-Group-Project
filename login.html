@@ -8,6 +8,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/simplex/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/d7eaa0fcbe.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/lib/login.css">
+    <script>
+        let colormode = localStorage.getItem('colormode');
+        if (colormode == 'dark') {
+            document.getElementsByTagName('html')[0].setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
 </head>
 
 <body>
@@ -16,7 +22,7 @@
         <div class="container-fluid">
             <a class="navbar-brand">SwollenHippo Smart Coop</a>
         </div>
-        <button id="btnLogout" class="btn btn-primary">Logout</button>
+        <button id="btnLogout" class="btn btn-primary" style="display:none">Logout</button>
         <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
             <i class="fa-solid fa-moon fs-4"></i>
             <i style="display: none" class="fa-solid fa-sun fs-4"></i>
@@ -107,6 +113,24 @@
                             <div class="form-group mt-2">
                                 <label for="txtZip" class="form-label">ZIP Code</label>
                                 <input id="txtZip" class="form-control" type="text" placeholder="Zip Code">
+                            </div>
+                            <div class="form-group mt-2">
+                                <label for="btnCoopIDInfo" class="form-label"><i class="fa-solid fa-question fs-5"></i></label>
+                                <button class="btn btn-info form-control" id="btnCoopIDInfo" type="button" data-bs-toggle="collapse" 
+                                    data-bs-target="#collapseCoopID" area-label="Expandable CoopID Explanation">
+                                    About CoopID
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="collapse mt-3" id="collapseCoopID">
+                        <div class="col-12 d-flex justify-content-center">
+                            <div class="card col-11">
+                                <div class="card-body">
+                                    The CoopID is a unique identifier associated with your SwollenHippo Smart Coop,
+                                    located on a quick-start slip found inside the box your coop came in. If you cannot find it
+                                    or it has been lost, contact our support line!
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -224,6 +248,112 @@
             });
         }
 
+        function getSettings() {
+            if (!sessionStorage.getItem("SessionID")) {
+                console.log("SessionID invalid or does not exist, settings could not be found.");
+                return;
+            }
+        
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionStorage.getItem("SessionID"),
+                    setting: 'colormode'
+                },
+                error: function (e) {
+                    console.log(e);
+                    updateSession();
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let strMode = result.Value;
+                        if (strMode == 'dark') {
+                            $('html').attr('data-bs-theme', 'dark');
+                            $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                            localStorage.setItem('colormode', 'dark')
+                            $(".fa-moon").hide();
+                            $(".fa-sun").show();
+                        } else {
+                            $('html').attr('data-bs-theme', 'light');
+                            $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
+                            localStorage.setItem('colormode', 'light');
+                            $(".fa-moon").show();
+                            $(".fa-sun").hide();
+                        }
+                    }
+                }
+            });
+        }
+
+        function setColorMode(strMode) {
+            if (strMode != 'light' && strMode != 'dark') {
+                console.log("Invalid color mode string");
+                return;
+            }
+        
+            if (sessionStorage.getItem('SessionID')) {
+                $.ajax({
+                    type: 'DELETE',
+                    url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID'),
+                        setting: 'colormode'
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        $.ajax({
+                            type: 'POST',
+                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                            data: {
+                                SessionID: sessionStorage.getItem('SessionID'),
+                                setting: "colormode",
+                                value: strMode
+                            },
+                            error: function (e) {
+                                console.log(e);
+                            },
+                            success: function (result) {
+                                $("#btnColorMode").prop('disabled', false);
+                            }
+                        });
+                    }
+                });
+            } else {
+                console.log("Session ID invalid or not found");
+                $("#btnColorMode").prop('disabled', false);
+            }
+        }
+
+        function calculateEggs(strEmail) {
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/users.php",
+                data: {
+                    Email: strEmail
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    if (result.EstablishedDate) {
+                        let dtCreationDate = new Date(result.EstablishedDate);
+                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
+                        updateSession();
+                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
+                        filterEggs();
+                    } else {
+                        console.log("Egg data could not be found.");
+                    }
+                }
+            });
+        }
+
         function filterEggs() {
             let intDays = $('#numEggsFilter').val();
             $.ajax({
@@ -257,61 +387,21 @@
                     if (result.SessionID != sessionStorage.getItem("SessionID")) {
                         sessionStorage.removeItem("SessionID");
                     }
+                    
                     strEmail = result.Email;
 
+                    if (!strEmail) {
+                        console.log("Could not find user email from session ID");
+                        $("#divLogin").slideToggle();
+                        return;
+                    }
+
                     if (sessionStorage.getItem("SessionID")) {
-                        $.ajax({
-                            type: 'GET',
-                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                            data: {
-                                SessionID: sessionStorage.getItem("SessionID"),
-                                setting: 'colormode'
-                            },
-                            error: function (e) {
-                                console.log(e);
-                                updateSession();
-                                $("#divDashboard").slideToggle();
-                            },
-                            success: function (result) {
-                                result = JSON.parse(result);
+                        getSettings();
+                        calculateEggs(strEmail);
 
-                                if (result != null) {
-                                    let strMode = result.Value;
-                                    if (strMode == 'dark') {
-                                        $('html').attr('data-bs-theme', 'dark');
-                                        $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                                        $(".fa-moon").hide();
-                                        $(".fa-sun").show();
-                                    } else {
-                                        $('html').attr('data-bs-theme', 'light');
-                                        $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
-                                        $(".fa-moon").show();
-                                        $(".fa-sun").hide();
-                                    }
-                                }
-
-                                $.ajax({
-                                    type: 'GET',
-                                    url: "http://www.simplecoop.swollenhippo.com/users.php",
-                                    data: {
-                                        Email: strEmail
-                                    },
-                                    error: function (e) {
-                                        console.log(e);
-                                    },
-                                    success: function (result) {
-                                        result = JSON.parse(result);
-                                        let dtCreationDate = new Date(result.EstablishedDate);
-                                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
-                                        updateSession();
-                                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
-                                        filterEggs();
-                                        $("#divDashboard").slideToggle();
-                                    }
-                                })
-
-                            }
-                        });
+                        $('#btnLogout').show();
+                        $("#divDashboard").slideToggle();
                     } else {
                         $("#divLogin").slideToggle();
                     }
@@ -345,6 +435,7 @@
                     sessionStorage.removeItem('SessionID');
 
                     $('#divDashboard').slideUp(function () {
+                        $('#btnLogout').hide();
                         $('#divLogin').slideDown();
                     })
                 }
@@ -372,34 +463,20 @@
                 sessionStorage.setItem("SessionID", result.SessionID);
 
                 // Saves dark mode preference
-                $("#btnColorMode").click();
-                setTimeout(function () {
-                    $("#btnColorMode").click();
-                }, 500);
+                // $("#btnColorMode").click();
+                // setTimeout(function () {
+                //     $("#btnColorMode").click();
+                // }, 500);
 
-                // Gets the account creation date
-                $.ajax({
-                    type: 'GET',
-                    url: "http://www.simplecoop.swollenhippo.com/users.php",
-                    data: {
-                        Email: strEmail
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    },
-                    success: function (result) {
-                        result = JSON.parse(result);
-                        let dtCreationDate = new Date(result.EstablishedDate);
-                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
-                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
-                        filterEggs();
-                        $('#txtLoginEmail').val('');
-                        $('#txtLoginPassword').val('');
-                        $('#divLogin').slideToggle(function () {
-                            $('#divDashboard').slideToggle();
-                        });
-                    }
-                })
+                getSettings();
+                calculateEggs(strEmail);
+
+                $('#txtLoginEmail').val('');
+                $('#txtLoginPassword').val('');
+                $('#divLogin').slideToggle(function () {
+                    $('#btnLogout').show();
+                    $('#divDashboard').slideToggle();
+                });
 
             })
         });
@@ -517,6 +594,7 @@
                             }
                         }
                     )
+                    
                     $.post(
                         "http://simplecoop.swollenhippo.com/useraddress.php",
                         {
@@ -552,12 +630,6 @@
                             return;
                         }
 
-                        // Saves dark mode preference
-                        $("#btnColorMode").click();
-                        setTimeout(function () {
-                            $("#btnColorMode").click();
-                        }, 500);
-
                         $('#txtFirstName').val('');
                         $('#txtLastName').val('');
                         $('#txtRegisterEmail').val('');
@@ -571,7 +643,10 @@
                         $('#txtCoopID').val('');
 
                         sessionStorage.setItem("SessionID", result.SessionID);
+                        setColorMode($('html').attr('data-bs-theme'));
+
                         $('#divRegister').slideToggle(function () {
+                            $('#btnLogout').show();
                             $('#divDashboard').slideToggle();
                         });
                     })
@@ -597,41 +672,7 @@
                 strMode = 'light';
             }
 
-            if (sessionStorage.getItem('SessionID')) {
-                updateSession();
-
-                $.ajax({
-                    type: 'DELETE',
-                    url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                    data: {
-                        SessionID: sessionStorage.getItem('SessionID'),
-                        setting: 'colormode'
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    },
-                    success: function (result) {
-                        $.ajax({
-                            type: 'POST',
-                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                            data: {
-                                SessionID: sessionStorage.getItem('SessionID'),
-                                setting: "colormode",
-                                value: strMode
-                            },
-                            error: function (e) {
-                                console.log(e);
-                            },
-                            success: function (result) {
-                                $("#btnColorMode").prop('disabled', false);
-                            }
-                        });
-                    }
-                });
-            } else {
-                $("#btnColorMode").prop('disabled', false);
-            }
-
+            setColorMode(strMode);
         });
 
         // Log eggs
