@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimpleCoop Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/simplex/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/journal/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/d7eaa0fcbe.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="css/lib/login.css">
     <script>
@@ -16,13 +16,13 @@
     </script>
 </head>
 
-<body>
+<body class="vh-100 h-100 bg-gradient" style="background-repeat: no-repeat;">
     <!-- Navbar -->
-    <nav class="navbar navbar-expand border-0 border-bottom border-primary" id="navTitleBar">
+    <nav class="navbar navbar-expand bg-primary" id="navTitleBar">
         <div class="container-fluid">
-            <a class="navbar-brand">SwollenHippo Smart Coop</a>
+            <a class="navbar-brand text-light">SwollenHippo Smart Coop</a>
         </div>
-        <button id="btnLogout" class="btn btn-primary" style="display:none">Logout</button>
+        <button id="btnLogout" class="btn btn-info" style="display:none">Logout</button>
         <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
             <i class="fa-solid fa-moon fs-4"></i>
             <i style="display: none" class="fa-solid fa-sun fs-4"></i>
@@ -32,8 +32,8 @@
     <div class="d-flex justify-content-center align-items-center mt-5">
         <!-- Login -->
         <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin" style="display: none">
-            <div class="card-header">
-                <h3 class="text-center">Login</h3>
+            <div class="card-header bg-primary">
+                <h3 class="text-center text-light">Login</h3>
             </div>
             <div class="card-body">
                 <form>
@@ -57,8 +57,8 @@
         </div>
         <!-- Registration -->
         <div class="card border-primary col-10 col-md-7 col-lg-5 my-4" id="divRegister" style="display:none;">
-            <div class="card-header">
-                <h3 class="text-center">Registration</h3>
+            <div class="card-header bg-primary">
+                <h3 class="text-center text-light">Registration</h3>
             </div>
             <div class="card-body">
                 <form>
@@ -144,49 +144,57 @@
         </div>
         <!-- Dashboard -->
         <div class="col-12 px-5 pb-5" style="display:none;" id="divDashboard">
-            <div class="card border-primary col-xl-5 col-lg-6 col-12 p-3">
-                <h2 class="text-center">Weather</h2>
-                <div class="d-flex justify-content-between px-2 mt-2">
-                    <div>
-                        <p id="weatherCondition">Loading...</p>
-                    </div>
-                    <div class="d-flex">
-                        <hr class="vr me-4">
-                        </hr>
+            <div class="card border-primary col-xl-5 col-lg-6 col-12">
+                <div class="card-header bg-primary">
+                    <h2 class="text-center text-light">Weather</h2>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between px-2 mt-2">
                         <div>
-                            <div class="mb-2">
-                                <p id="weatherLocation">Cookeville</p>
-                                <p id="weatherDate">Loading...</p>
+                            <p id="weatherCondition">Loading...</p>
+                        </div>
+                        <div class="d-flex">
+                            <hr class="vr me-4">
+                            </hr>
+                            <div>
+                                <div class="mb-2">
+                                    <p id="weatherLocation">Cookeville</p>
+                                    <p id="weatherDate">Loading...</p>
+                                </div>
+                                <p id="weatherTemperature">Loading...</p>
                             </div>
-                            <p id="weatherTemperature">Loading...</p>
                         </div>
                     </div>
                 </div>
                 <button onclick="updateWeather()">Update Weather</button>
             </div>
-            <div class="card border-primary col-xl-5 col-lg-6 col-12 p-3">
-                <h3 class="text-center mb-4">Egg Counter</h3>
-                <div>
-                    <div class="input-group mb-4 d-flex justify-content-center">
-                        <input class="rounded-start col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
-                            aria-label="Number of eggs to log">
-                        <button id="btnEggs" class="btn btn-primary">Log Eggs</button>
-                    </div>
-                    <div class="d-flex justify-content-center align-items-center">
-                        <p class="d-sm-block d-none my-auto">Total eggs logged in&nbsp;</p>
-                        <p class="my-auto">last</p>
-                        <input id="numEggsFilter" type="number" class="mx-2 col-2 rounded-3"
-                            aria-label="Eggs logged in last blank days">
-                        <p class="my-auto">days:</p>
-                        <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
-                    </div>
+            <div class="card border-primary col-xl-5 col-lg-6 col-12">
+                <div class="card-header bg-primary">
+                    <h3 class="text-center text-light">Egg Counter</h3>
+                </div>
+                <div class="card-body">
+                    <div>
+                        <div class="input-group mb-4 d-flex justify-content-center">
+                            <input class="rounded-start col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
+                                aria-label="Number of eggs to log">
+                            <button id="btnEggs" class="btn btn-primary">Log Eggs</button>
+                        </div>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <p class="d-sm-block d-none my-auto">Total eggs logged in&nbsp;</p>
+                            <p class="my-auto">last</p>
+                            <input id="numEggsFilter" type="number" class="mx-2 col-2 rounded-3"
+                                aria-label="Eggs logged in last blank days">
+                            <p class="my-auto">days:</p>
+                            <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
+                        </div>
 
-                    <!--Add button to view Table-->
-                    <div class="col-12 px-5 pb-5">
-                        <button id="btnLogObservation" class="btn btn-primary">Log Observation</button>
-                        <button id="btnViewTable" class="btn btn-secondary">View Table</button>
-                    </div>
+                        <!--Add button to view Table-->
+                        <div class="col-12 px-5 pb-5">
+                            <button id="btnLogObservation" class="btn btn-primary">Log Observation</button>
+                            <button id="btnViewTable" class="btn btn-secondary">View Table</button>
+                        </div>
 
+                    </div>
                 </div>
             </div>
 
