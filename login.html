@@ -187,7 +187,7 @@
                                 <p class="d-sm-block d-none my-auto">Total eggs logged in&nbsp;</p>
                                 <p class="my-auto">last</p>
                                 <input id="numEggsFilter" type="number" class="mx-2 col-2 rounded-3"
-                                    aria-label="Eggs logged in last blank days">
+                                    aria-label="Eggs logged in last blank days" onchange="filterEggs()">
                                 <p class="my-auto">days:</p>
                                 <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
                             </div>
@@ -237,6 +237,28 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script lang="text/javascript">
+
+        // Just here for now to delete users to test registration. Just uncomment this call
+        // and pass the email you want to delete as a string and refresh
+
+        // deleteUser('');
+
+        function deleteUser(strEmail){
+            $.ajax({
+                type: 'DELETE',
+                url: "http://www.simplecoop.swollenhippo.com/users.php",
+                data: {
+                    Email: strEmail
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                }
+            });
+        }
 
         // Weather widget functionality
         function updateWeather() {
@@ -291,7 +313,7 @@
                         if (strMode == 'dark') {
                             $('html').attr('data-bs-theme', 'dark');
                             $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                            localStorage.setItem('colormode', 'dark')
+                            localStorage.setItem('colormode', 'dark');
                             $(".fa-moon").hide();
                             $(".fa-sun").show();
                         } else {
@@ -324,6 +346,8 @@
                         console.log(e);
                     },
                     success: function (result) {
+                        result = JSON.parse(result);
+                        
                         $.ajax({
                             type: 'POST',
                             url: "http://www.simplecoop.swollenhippo.com/settings.php",
@@ -336,13 +360,16 @@
                                 console.log(e);
                             },
                             success: function (result) {
+                                result = JSON.parse(result);
+                                
+                                localStorage.setItem('colormode', strMode);
                                 $("#btnColorMode").prop('disabled', false);
                             }
                         });
                     }
                 });
             } else {
-                console.log("Session ID invalid or not found");
+                localStorage.setItem('colormode', strMode);
                 $("#btnColorMode").prop('disabled', false);
             }
         }
@@ -357,11 +384,12 @@
                 error: function (e) {
                     console.log(e);
                 },
-                success: function (result) {
+                success: function (result) {   
                     result = JSON.parse(result);
+
                     if (result.EstablishedDate) {
                         let dtCreationDate = new Date(result.EstablishedDate);
-                        intDaysSinceAccountCreation = Math.floor((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
+                        intDaysSinceAccountCreation = Math.ceil((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
                         updateSession();
                         $("#numEggsFilter").val(intDaysSinceAccountCreation);
                         filterEggs();
@@ -384,8 +412,9 @@
                 error: function (e) {
                     console.log(e);
                 },
-                success: function (result) {
+                success: function (result) { 
                     result = JSON.parse(result);
+
                     let intTotalEggs = 0;
                     result.forEach(log => {
                         intTotalEggs += log.Harvested;
@@ -407,7 +436,7 @@
             let strEmail = "";
             // Checks if there is anything in sessionStorage
             if (sessionStorage.getItem("SessionID")) {
-                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
+                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {                    
                     if (result.SessionID != sessionStorage.getItem("SessionID")) {
                         sessionStorage.removeItem("SessionID");
                     }
@@ -423,15 +452,26 @@
                     if (sessionStorage.getItem("SessionID")) {
                         getSettings();
                         calculateEggs(strEmail);
+                        logEnvironmentObservations();
 
                         $('#btnLogout').show();
                         $("#divDashboard").slideToggle();
                     } else {
                         $("#divLogin").slideToggle();
+                        if (localStorage.getItem('colormode') == 'dark') {
+                            $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                            $(".fa-moon").hide();
+                            $(".fa-sun").show();
+                        }
                     }
                 });
             } else {
                 $("#divLogin").slideToggle();
+                if (localStorage.getItem('colormode') == 'dark') {
+                    $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                    $(".fa-moon").hide();
+                    $(".fa-sun").show();
+                }
             }
         });
 
@@ -486,14 +526,9 @@
                 }
                 sessionStorage.setItem("SessionID", result.SessionID);
 
-                // Saves dark mode preference
-                // $("#btnColorMode").click();
-                // setTimeout(function () {
-                //     $("#btnColorMode").click();
-                // }, 500);
-
                 getSettings();
                 calculateEggs(strEmail);
+                logEnvironmentObservations();
 
                 $('#txtLoginEmail').val('');
                 $('#txtLoginPassword').val('');
@@ -609,6 +644,7 @@
                         },
                         function (result) {
                             result = JSON.parse(result);
+                            
                             if (result.Error) {
                                 Swal.fire({
                                     title: "Oops!",
@@ -631,6 +667,7 @@
                         },
                         function (result) {
                             result = JSON.parse(result);
+                            
                             if (result.Error) {
                                 Swal.fire({
                                     title: "Oops!",
@@ -642,7 +679,7 @@
                     )
 
                     $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
-                        result = JSON.parse(result);
+                        result = JSON.parse(result);                       
 
                         if (result.Outcome != undefined) {
                             Swal.fire({
@@ -668,6 +705,8 @@
 
                         sessionStorage.setItem("SessionID", result.SessionID);
                         setColorMode($('html').attr('data-bs-theme'));
+
+                        logEnvironmentObservations();
 
                         $('#divRegister').slideToggle(function () {
                             $('#btnLogout').show();
@@ -714,15 +753,12 @@
                     console.log(e);
                 },
                 success: function (result) {
+                    result = JSON.parse(result);
+                    
                     filterEggs();
                 }
             });
 
-        });
-
-        // Filter eggs
-        $('#numEggsFilter').on('change', function () {
-            filterEggs();
         });
 
         function getRandomObservationDatetime() {
@@ -805,8 +841,8 @@
                     humidity: observation.humidity
                 };
 
-                $.post('https://simplecoop.swollenhippo.com/environment.php', requestData, function (result) {
-                    console.log(result);
+                $.post('http://simplecoop.swollenhippo.com/environment.php', requestData, function (result) {
+                    result = JSON.parse(result);                   
                 });
             });
         }
