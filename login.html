@@ -145,12 +145,12 @@
                 </form>
             </div>
         </div>
-        <!-- Dashboard -->
-        <div class="col-12 vh-100 px-5 pb-5 " style="display:none" id="divDashboard">
+        <!-- DashBoard -->
+        <div class="col-12 vh-100 px-5 pb-5" style="display:none" id="divDashboard">
             <div class="d-flex flex-column flex-md-row justify-content-center align-items-start">
                 <div class="card h-50 border-primary col-xl-5 col-lg-6 col-12 mx-2 mt-3">
                     <div class="card-header bg-primary">
-                        <h3 class="text-center text-light">Weather</h2>
+                        <h3 class="text-center text-light">Weather</h3>
                     </div>
                     <div class="card-body">
                         <div class="d-flex justify-content-between px-2 mt-2">
@@ -191,35 +191,39 @@
                                 <p class="my-auto">days:</p>
                                 <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
                             </div>
-
-                            <!--Add button to view Table-->
-                            <div class="col-12 px-5 pb-5">
-                                <button id="btnLogObservation" class="btn btn-primary">Log Observation</button>
-                                <button id="btnViewTable" class="btn btn-secondary">View Table</button>
-                            </div>
-
                         </div>
                     </div>
-                </div>
-
-                <!-- Table -->
-                <div class="col-12 px-5 pb-5" style="display:none;" id="divTable">
-                    <h3 class="text-center mb-4">Observations</h3>
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>Observation Date (YYYY-MM-DD)</th>
-                                <th>Temperature (F)</th>
-                                <th>Humidity %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="observationTableBody">
-                            <!-- Observation data will be here-->
-                        </tbody>
-                    </table>
+                    <!-- Buttons -->
+                    <div class="card-footer bg-transparent border-0">
+                        <button id="btnLogObservation" class="btn btn-primary w-100">Log Observation</button>
+                        <select id="viewOption" class="form-select w-100">
+                            <option value="table">View Data as Table</option>
+                            <option value="graph">View Data as Graph</option>
+                        </select>
+                    </div>
                 </div>
             </div>
-
+        
+            <!-- Table -->
+            <div class="card-body" style="display:none;" id="divTable">
+                <h3 class="text-center mb-4">Observations</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Observation Date (YYYY-MM-DD)</th>
+                            <th>Temperature (F)</th>
+                            <th>Humidity %</th>
+                        </tr>
+                    </thead>
+                    <tbody id="observationTableBody">
+                        <!-- Observation data will be here-->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Graph -->
+            <div class="card-body" style="display:none;" id="divGraph">
+                <canvas id="observationGraph"></canvas>
+            </div>
         </div>
 
     </div>
@@ -231,6 +235,7 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script lang="text/javascript">
 
         // Weather widget functionality
@@ -394,6 +399,9 @@
         $(document).ready(function () {
             // Call the function to log environment observations
             logEnvironmentObservations();
+            // Call function to initially hide chart and show table
+            $('#divGraph').hide();
+            $('#divTable').show();
 
             let intDaysSinceAccountCreation = 0;
             let strEmail = "";
@@ -803,10 +811,12 @@
             });
         }
 
+        let myGraph;
+
         $('#btnLogObservation').on('click', function () {
             var currentDate = new Date();
 
-            //Format date and time into YYYY-MM-DD
+            // Format date and time into YYYY-MM-DD
             var formattedDate = currentDate.toISOString().split('T')[0];
             var formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             var observationDateTime = formattedDate + ' T ' + formattedTime;
@@ -822,12 +832,82 @@
                     <td>${humidity}</td>
                 </tr>`
             );
+
+            generateGraph();
+            
         });
 
-        $('#btnViewTable').on('click', function () {
-            $('#divTable').show();
+        // Function to switch between viewing data as table or graph
+        $('#viewOption').change(function () {
+            var selectedOption = $(this).val();
+            if (selectedOption === 'table') {
+                $('#divTable').show();
+                $('#divGraph').hide();
+            } else if (selectedOption === 'graph') {
+                $('#divTable').hide();
+                $('#divGraph').show();
+
+                generateGraph();
+            }
         });
 
+        // Generate Graph
+        function generateGraph() {
+            // Destroy the current graph and then refil it witht the updated table to update the graph
+            if (myGraph) {
+                myGraph.destroy();
+            }
+
+            // Get all needed data from the table
+            var observationRows = $('#observationTableBody tr');
+            var observationDates = [];
+            var temperatures = [];
+            var humidities = [];
+
+            observationRows.each(function () {
+                var observationDatetime = $(this).find('td:first').text();
+                var temperature = parseFloat($(this).find('td:nth-child(2)').text());
+                var humidity = parseFloat($(this).find('td:nth-child(3)').text());
+                observationDates.push(observationDatetime);
+                temperatures.push(temperature);
+                humidities.push(humidity);
+            });
+
+            // Reverse the arrays to display the most recent data on the right
+            observationDates.reverse();
+            temperatures.reverse();
+            humidities.reverse();
+
+            var ctx = document.getElementById('observationGraph').getContext('2d');
+            myGraph = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: observationDates,
+                    datasets: [{
+                        label: 'Temperature (F)',
+                        data: temperatures,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Humidity (%)',
+                        data: humidities,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
+            });
+        }
     </script>
 </body>
 
