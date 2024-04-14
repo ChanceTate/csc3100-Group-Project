@@ -1,0 +1,13 @@
+#tblObservations td, #tblEggs td{
+    text-align: center;
+}
+
+#dt-length-0, #dt-length-1 {
+    margin-right: 10px;
+    border-radius: .375em;
+}
+
+#dt-search-0, #dt-search-1 {
+    margin-left: 10px;
+    border-radius: .375em;
+}

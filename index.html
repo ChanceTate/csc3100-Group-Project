@@ -7,7 +7,8 @@
     <title>SimpleCoop Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootswatch/dist/journal/bootstrap.min.css" rel="stylesheet">
     <script src="https://kit.fontawesome.com/d7eaa0fcbe.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="css/lib/login.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.1/css/dataTables.dataTables.min.css">
+    <link rel="stylesheet" href="css/lib/index.css">
     <script>
         let colormode = localStorage.getItem('colormode');
         if (colormode == 'dark') {
@@ -16,7 +17,7 @@
     </script>
 </head>
 
-<body class="vh-100 h-100 bg-gradient" style="background-repeat: no-repeat;">
+<body class="bg-gradient" style="background-repeat: no-repeat; min-height: 100vh">
     <!-- Navbar -->
     <nav class="navbar navbar-expand bg-primary" id="navTitleBar">
         <div class="container-fluid">
@@ -29,7 +30,7 @@
         </button>
     </nav>
     <!-- Main Content -->
-    <div class="d-flex justify-content-center align-items-center mt-5">
+    <div class="d-flex justify-content-center align-items-center py-5 mx-4">
         <!-- Login -->
         <div class="card border-primary col-10 col-md-7 col-lg-5" id="divLogin" style="display: none">
             <div class="card-header bg-primary">
@@ -56,7 +57,7 @@
             </div>
         </div>
         <!-- Registration -->
-        <div class="card border-primary col-10 col-md-7 col-lg-5 my-4" id="divRegister" style="display:none">
+        <div class="card border-primary col-10 col-md-7 col-lg-5" id="divRegister" style="display:none">
             <div class="card-header bg-primary">
                 <h3 class="text-center text-light">Registration</h3>
             </div>
@@ -145,84 +146,122 @@
                 </form>
             </div>
         </div>
-        <!-- DashBoard -->
-        <div class="col-12 vh-100 px-5 pb-5" style="display:none" id="divDashboard">
-            <div class="d-flex flex-column flex-md-row justify-content-center align-items-start">
-                <div class="card h-50 border-primary col-xl-5 col-lg-6 col-12 mx-2 mt-3">
+        <!-- Dashboard -->
+        <div class="col-12 pb-5 g-lg-3" style="display:none" id="divDashboard">
+            <div class="d-flex flex-column flex-lg-row align-items-start">
+                <!-- Observations -->
+                <div class="card border-primary col-12 col-sm me-lg-3">
                     <div class="card-header bg-primary">
-                        <h3 class="text-center text-light">Weather</h3>
+                        <h3 class="text-center text-light">Observations</h3>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between px-2 mt-2">
-                            <div>
-                                <p id="weatherCondition">Loading...</p>
+                        <!-- Above Table/Graph-->
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="col me-3">
+                                <button type="button" id="btnFill" class="btn btn-primary mb-3">Fill With Current
+                                    Data</button>
+                                <div class="d-flex flex-column mb-2">
+                                    <label class="pb-2" for="numTemp">Temperature (F)</label>
+                                    <input class="rounded-2 w-50" id="numTemp" type="number"
+                                        oninput="this.value = Math.round(this.value)">
+                                </div>
+                                <div class="d-flex flex-column mb-4">
+                                    <label class="pb-2" for="numHumidity">Humidity %</label>
+                                    <input class="rounded-2 w-50" id="numHumidity" type="number"
+                                        oninput="this.value = Math.round(this.value)">
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <hr class="vr me-4">
-                                </hr>
-                                <div>
-                                    <div class="mb-2">
-                                        <p id="weatherLocation">Cookeville</p>
-                                        <p id="weatherDate">Loading...</p>
+                            <!-- Weather -->
+                            <div class="card border-primary">
+                                <div class="card-header bg-primary">
+                                    <h3 class="text-center text-light">Current<br>Weather</h3>
+                                </div>
+                                <div class="card-body d-flex">
+                                    <div class="d-sm-block d-none my-auto">
+                                        <p class="h5" id="txtHigh"></p>
+                                        <p class="m-0" id="txtLow"></p>
                                     </div>
-                                    <p id="weatherTemperature">Loading...</p>
+                                    <div class="d-flex">
+                                        <hr class="vr mx-3 d-sm-block d-none">
+                                        </hr>
+                                        <div>
+                                            <div class="mb-2">
+                                                <p class="m-0" id="txtLocation"></p>
+                                                <p class="small fw-light" id="txtDay"></p>
+                                            </div>
+                                            <p class="m-0 h3" id="txtTemp"></p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <button type="button" id="btnLogObservation" class="btn btn-primary">Log
+                                Observation</button>
+                            <button type="button" id="btnObservationsGraph" class="btn btn-primary">View Graph</button>
+                            <button type="button" id="btnObservationsTable" class="btn btn-primary"
+                                style="display: none">View Table</button>
+                        </div>
+                        <!-- Table -->
+                        <div id="divObservationsTable">
+                            <table id="tblObservations" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Date <span
+                                                class="d-none d-sm-inline">(YYYY-MM-DD)</span></th>
+                                        <th class="text-center">Temp<span class="d-none d-sm-inline">erature</span> (°F)
+                                        </th>
+                                        <th class="text-center">Humidity %</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblObservationsBody">
+                                    <!-- Observation data will be here-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Graph -->
+                        <div style="display: none" id="divObservationsGraph">
+                            <canvas id="grfObservations"></canvas>
+                        </div>
                     </div>
-                    <button onclick="updateWeather()">Update Weather</button>
                 </div>
-                <div class="card h-50 border-primary col-xl-5 col-lg-6 col-12 mx-2 mt-3">
+                <!-- Eggs -->
+                <div class="card border-primary col-12 col-sm ms-lg-3 mt-5 mt-lg-0">
                     <div class="card-header bg-primary">
                         <h3 class="text-center text-light">Egg Counter</h3>
                     </div>
                     <div class="card-body">
-                        <div>
-                            <div class="input-group mb-4 d-flex justify-content-center">
-                                <input class="rounded-start col-lg-3 col-md-2 col-sm-2 col-5" id="numEggs" type="number"
+                        <div class="d-flex flex-sm-row flex-column justify-content-between align-items-center mb-3">
+                            <div class="input-group col justify-content-sm-start justify-content-center mb-sm-0 mb-3">
+                                <input class="rounded-start col-4" id="numEggs" type="number"
                                     aria-label="Number of eggs to log">
-                                <button id="btnEggs" class="btn btn-primary">Log Eggs</button>
+                                <button type="button" id="btnEggs" class="btn btn-primary">Log Eggs</button>
                             </div>
-                            <div class="d-flex justify-content-center align-items-center">
-                                <p class="d-sm-block d-none my-auto">Total eggs logged in&nbsp;</p>
-                                <p class="my-auto">last</p>
-                                <input id="numEggsFilter" type="number" class="mx-2 col-2 rounded-3"
-                                    aria-label="Eggs logged in last blank days" onchange="filterEggs()">
-                                <p class="my-auto">days:</p>
-                                <h3 id="txtEggsTotal" class="ms-2 my-auto">0</h3>
-                            </div>
+                            <button type="button" id="btnEggsGraph" class="btn btn-primary">View Graph</button>
+                            <button type="button" id="btnEggsTable" class="btn btn-primary" style="display: none">View
+                                Table</button>
+                        </div>
+                        <!-- Table -->
+                        <div id="divEggsTable">
+                            <table id="tblEggs" class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Date <span
+                                                class="d-none d-sm-inline">(YYYY-MM-DD)</span></th>
+                                        <th class="text-center">Count</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblEggsBody">
+                                    <!-- Egg data will be here-->
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Graph -->
+                        <div style="display:none" id="divEggsGraph">
+                            <canvas id="grfEggs"></canvas>
                         </div>
                     </div>
-                    <!-- Buttons -->
-                    <div class="card-footer bg-transparent border-0">
-                        <button id="btnLogObservation" class="btn btn-primary w-100">Log Observation</button>
-                        <select id="viewOption" class="form-select w-100">
-                            <option value="table">View Data as Table</option>
-                            <option value="graph">View Data as Graph</option>
-                        </select>
-                    </div>
                 </div>
-            </div>
-        
-            <!-- Table -->
-            <div class="card-body" style="display:none;" id="divTable">
-                <h3 class="text-center mb-4">Observations</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Observation Date (YYYY-MM-DD)</th>
-                            <th>Temperature (F)</th>
-                            <th>Humidity %</th>
-                        </tr>
-                    </thead>
-                    <tbody id="observationTableBody">
-                        <!-- Observation data will be here-->
-                    </tbody>
-                </table>
-            </div>
-            <!-- Graph -->
-            <div class="card-body" style="display:none;" id="divGraph">
-                <canvas id="observationGraph"></canvas>
             </div>
         </div>
 
@@ -236,14 +275,20 @@
         crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
     <script lang="text/javascript">
 
-        // Just here for now to delete users to test registration. Just uncomment this call
-        // and pass the email you want to delete as a string and refresh
+        // Global Variables
+        let strLat = "";
+        let strLon = "";
+        let tblObservations = $('#tblObservations').DataTable({ autoWidth: false });
+        let tblEggs = $('#tblEggs').DataTable({ autoWidth: false });
+        let grfObservations;
+        let grfEggs;
 
+        // For Testing Purposes
         // deleteUser('');
-
-        function deleteUser(strEmail){
+        function deleteUser(strEmail) {
             $.ajax({
                 type: 'DELETE',
                 url: "http://www.simplecoop.swollenhippo.com/users.php",
@@ -256,24 +301,43 @@
                 success: function (result) {
                     result = JSON.parse(result);
                     console.log(result);
+
+                    $.ajax({
+                        type: 'DELETE',
+                        url: "http://www.simplecoop.swollenhippo.com/useraddress.php",
+                        data: {
+                            Email: strEmail
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            console.log(result);
+                        }
+                    })
                 }
             });
         }
 
-        // Weather widget functionality
-        function updateWeather() {
-            // Get random weather data
-            const temperature = getRandomTemperature().toFixed(1); // Round to one decimal
-            const humidity = getRandomHumidity().toFixed(1);
-            const observationDatetime = getRandomObservationDatetime();
-            const date = new Date(observationDatetime); // Convert to Date object
-            const weatherConditions = ["Sunny", "Raining", "Partly Cloudy"];
-
-            // Update the widget elements
-            const randomIndex = Math.floor(Math.random() * weatherConditions.length);
-            document.getElementById("weatherCondition").textContent = weatherConditions[randomIndex];
-            document.getElementById("weatherDate").textContent = date.toLocaleDateString();
-            document.getElementById("weatherTemperature").textContent = temperature + "°F";
+        // For Testing Purposes
+        // deleteObservation('');
+        function deleteObservation(strLogID) {
+            $.ajax({
+                type: 'DELETE',
+                url: "http://www.simplecoop.swollenhippo.com/environment.php",
+                data: {
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    logID: strLogID
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                }
+            });
         }
 
         // Updates Session's LastUsedDateTime
@@ -288,6 +352,88 @@
             });
         }
 
+        // Formats a date object to a string in the format YYYY-MM-DD HH:MM AM/PM
+        function formatDate(date) {
+            const year = date.getFullYear();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+
+            let hours = date.getHours();
+            const minutes = date.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+
+            hours = hours % 12;
+            hours = hours ? hours : 12;
+
+            const paddedMonth = month < 10 ? '0' + month : month;
+            const paddedDay = day < 10 ? '0' + day : day;
+            const paddedHours = hours < 10 ? '0' + hours : hours;
+            const paddedMinutes = minutes < 10 ? '0' + minutes : minutes;
+
+            return `${year}-${paddedMonth}-${paddedDay} ${paddedHours}:${paddedMinutes} ${ampm}`;
+        }
+
+        // Converts a date to ISO format but in local time
+        function toLocalISOString(date) {
+            const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+            const localISOTime = (new Date(date - offset)).toISOString().slice(0, -1);
+            return localISOTime.replace('Z', '');
+        }
+
+        // Returns the current day of the week
+        function getCurrentDayOfWeek() {
+            const arrDaysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            return arrDaysOfWeek[new Date().getDay()];
+        }
+
+        // Gets user's latitude and longitude based on their ZIP code and fills weather widget
+        function getWeather(strEmail) {
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/useraddress.php",
+                data: {
+                    Email: strEmail
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log("User Address", result);
+                    $('#txtLocation').text(result.City);
+
+                    $.ajax({
+                        type: 'GET',
+                        url: `http://api.openweathermap.org/geo/1.0/zip?zip=${result.ZIP},US&appid=5e8668fb13050ff3f6df16196b1f5be3`,
+                        error: function (e) {
+                            console.log(e);
+                        },
+                        success: function (result) {
+                            console.log("Lat/Lon", result);
+                            strLat = result.lat;
+                            strLon = result.lon;
+
+                            $.ajax({
+                                type: 'GET',
+                                url: `https://api.openweathermap.org/data/3.0/onecall?lat=${strLat}&lon=${strLon}&exclude=minutely,hourly,alerts&units=imperial&appid=5e8668fb13050ff3f6df16196b1f5be3`,
+                                error: function (e) {
+                                    console.log(e);
+                                },
+                                success: function (result) {
+                                    console.log("Weather API", result);
+                                    $('#txtTemp').text(Math.round(result.current.temp) + "°F");
+                                    $('#txtHigh').text(Math.round(result.daily[0].temp.max) + "°F");
+                                    $('#txtLow').text(Math.round(result.daily[0].temp.min) + "°F");
+                                }
+                            });
+                        }
+
+                    })
+                }
+            });
+        }
+
+        // Gets colormode from the database and changes the theme accordingly
         function getSettings() {
             if (!sessionStorage.getItem("SessionID")) {
                 console.log("SessionID invalid or does not exist, settings could not be found.");
@@ -303,10 +449,10 @@
                 },
                 error: function (e) {
                     console.log(e);
-                    updateSession();
                 },
                 success: function (result) {
                     result = JSON.parse(result);
+                    console.log("ColorMode", result);
 
                     if (result != null) {
                         let strMode = result.Value;
@@ -328,6 +474,7 @@
             });
         }
 
+        // Updates color mode in the database
         function setColorMode(strMode) {
             if (strMode != 'light' && strMode != 'dark') {
                 console.log("Invalid color mode string");
@@ -347,7 +494,8 @@
                     },
                     success: function (result) {
                         result = JSON.parse(result);
-                        
+                        console.log(result);
+
                         $.ajax({
                             type: 'POST',
                             url: "http://www.simplecoop.swollenhippo.com/settings.php",
@@ -361,7 +509,8 @@
                             },
                             success: function (result) {
                                 result = JSON.parse(result);
-                                
+                                console.log(result);
+
                                 localStorage.setItem('colormode', strMode);
                                 $("#btnColorMode").prop('disabled', false);
                             }
@@ -374,74 +523,159 @@
             }
         }
 
-        function calculateEggs(strEmail) {
+        // Populates environment observations table and graph
+        function getEnvironmentObservations() {
             $.ajax({
                 type: 'GET',
-                url: "http://www.simplecoop.swollenhippo.com/users.php",
+                url: "http://www.simplecoop.swollenhippo.com/environment.php",
                 data: {
-                    Email: strEmail
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    days: 100000
                 },
                 error: function (e) {
                     console.log(e);
                 },
-                success: function (result) {   
+                success: function (result) {
                     result = JSON.parse(result);
+                    console.log("Environment Observations", result);
 
-                    if (result.EstablishedDate) {
-                        let dtCreationDate = new Date(result.EstablishedDate);
-                        intDaysSinceAccountCreation = Math.ceil((new Date() - dtCreationDate) / (1000 * 60 * 60 * 24));
-                        updateSession();
-                        $("#numEggsFilter").val(intDaysSinceAccountCreation);
-                        filterEggs();
-                    } else {
-                        console.log("Egg data could not be found.");
-                    }
+                    let arrObservationDates = [];
+                    let arrTemperatures = [];
+                    let arrHumidities = [];
+
+                    result.forEach(log => {
+                        tblObservations.row.add([
+                            formatDate(new Date(log.ObservationDateTime.replace(' ', 'T'))),
+                            log.Temperature,
+                            log.Humidity
+                        ]).draw();
+
+                        arrObservationDates.push(formatDate(new Date(log.ObservationDateTime)).slice(0, 10));
+                        arrTemperatures.push(log.Temperature);
+                        arrHumidities.push(log.Humidity);
+                    });
+
+                    var ctx = document.getElementById('grfObservations').getContext('2d');
+                    grfObservations = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: arrObservationDates,
+                            datasets: [{
+                                label: 'Temperature (F)',
+                                data: arrTemperatures,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }, {
+                                label: 'Humidity (%)',
+                                data: arrHumidities,
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        callback: function (value) {
+                                            if (value % 1 === 0) {
+                                                return value;
+                                            }
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoskip: true,
+                                        maxTicksLimit: 5
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             });
         }
 
-        function filterEggs() {
-            let intDays = $('#numEggsFilter').val();
+        // Populates egg table and graph
+        function getEggs() {
             $.ajax({
                 type: 'GET',
                 url: "http://www.simplecoop.swollenhippo.com/eggs.php",
                 data: {
                     SessionID: sessionStorage.getItem('SessionID'),
-                    days: intDays
+                    days: 100000
                 },
                 error: function (e) {
                     console.log(e);
                 },
-                success: function (result) { 
+                success: function (result) {
                     result = JSON.parse(result);
+                    console.log("Egg Logs", result);
 
-                    let intTotalEggs = 0;
+                    let arrLogDates = [];
+                    let arrEggCounts = [];
+
                     result.forEach(log => {
-                        intTotalEggs += log.Harvested;
+                        tblEggs.row.add([
+                            formatDate(new Date(log.LogDateTime.replace(' ', 'T'))),
+                            log.Harvested
+                        ]).draw(false);
+
+                        arrLogDates.push(formatDate(new Date(log.LogDateTime)).slice(0, 10));
+                        arrEggCounts.push(log.Harvested);
                     });
-                    $('#txtEggsTotal').text(intTotalEggs);
+
+                    var ctx = document.getElementById('grfEggs').getContext('2d');
+                    grfEggs = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: arrLogDates,
+                            datasets: [{
+                                label: 'Egg Count',
+                                data: arrEggCounts,
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    ticks: {
+                                        // Use a callback function to format ticks as whole numbers
+                                        callback: function (value) {
+                                            if (value % 1 === 0) {
+                                                return value;
+                                            }
+                                        }
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        autoskip: true,
+                                        maxTicksLimit: 5
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             });
 
         }
 
         $(document).ready(function () {
-            // Call the function to log environment observations
-            logEnvironmentObservations();
-            // Call function to initially hide chart and show table
-            $('#divGraph').hide();
-            $('#divTable').show();
-
-            let intDaysSinceAccountCreation = 0;
-            let strEmail = "";
+            $('#txtDay').text(getCurrentDayOfWeek());
             // Checks if there is anything in sessionStorage
             if (sessionStorage.getItem("SessionID")) {
-                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {                    
+                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
                     if (result.SessionID != sessionStorage.getItem("SessionID")) {
                         sessionStorage.removeItem("SessionID");
                     }
 
-                    strEmail = result.Email;
+                    let strEmail = result.Email;
 
                     if (!strEmail) {
                         console.log("Could not find user email from session ID");
@@ -450,13 +684,16 @@
                     }
 
                     if (sessionStorage.getItem("SessionID")) {
+                        updateSession();
+                        getWeather(strEmail);
                         getSettings();
-                        calculateEggs(strEmail);
-                        logEnvironmentObservations();
+                        getEggs();
+                        getEnvironmentObservations();
 
                         $('#btnLogout').show();
                         $("#divDashboard").slideToggle();
                     } else {
+                        console.log("Invalid SessionID. Displaying Login")
                         $("#divLogin").slideToggle();
                         if (localStorage.getItem('colormode') == 'dark') {
                             $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
@@ -466,6 +703,7 @@
                     }
                 });
             } else {
+                console.log("No session ID found. Displaying Login")
                 $("#divLogin").slideToggle();
                 if (localStorage.getItem('colormode') == 'dark') {
                     $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
@@ -478,11 +716,13 @@
         // Toggles login and register cards using the jQuery "is visible" tool
         $('.btnToggle').on('click', function () {
             if ($('#divLogin').is(':visible')) {
+                console.log("Toggling to Register")
                 $('#divLogin').slideToggle(function () {
                     $('#divRegister').slideToggle();
                 });
             }
             else {
+                console.log("Toggling to Login")
                 $('#divRegister').slideToggle(function () {
                     $('#divLogin').slideToggle();
                 });
@@ -496,7 +736,14 @@
                 type: 'DELETE',
                 data: { SessionID: sessionStorage.getItem('SessionID') },
                 success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
                     sessionStorage.removeItem('SessionID');
+
+                    tblObservations.clear().draw();
+                    tblEggs.clear().draw();
+                    grfObservations.destroy();
+                    grfEggs.destroy();
 
                     $('#divDashboard').slideUp(function () {
                         $('#btnLogout').hide();
@@ -510,7 +757,6 @@
         $('#btnLogin').on('click', function () {
             let strEmail = $('#txtLoginEmail').val();
             let strPassword = $('#txtLoginPassword').val();
-            let intDaysSinceAccountCreation = 0;
 
             $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
                 result = JSON.parse(result);
@@ -526,9 +772,10 @@
                 }
                 sessionStorage.setItem("SessionID", result.SessionID);
 
+                getWeather(strEmail);
                 getSettings();
-                calculateEggs(strEmail);
-                logEnvironmentObservations();
+                getEggs();
+                getEnvironmentObservations();
 
                 $('#txtLoginEmail').val('');
                 $('#txtLoginPassword').val('');
@@ -644,7 +891,7 @@
                         },
                         function (result) {
                             result = JSON.parse(result);
-                            
+
                             if (result.Error) {
                                 Swal.fire({
                                     title: "Oops!",
@@ -667,7 +914,7 @@
                         },
                         function (result) {
                             result = JSON.parse(result);
-                            
+
                             if (result.Error) {
                                 Swal.fire({
                                     title: "Oops!",
@@ -679,7 +926,7 @@
                     )
 
                     $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
-                        result = JSON.parse(result);                       
+                        result = JSON.parse(result);
 
                         if (result.Outcome != undefined) {
                             Swal.fire({
@@ -706,7 +953,9 @@
                         sessionStorage.setItem("SessionID", result.SessionID);
                         setColorMode($('html').attr('data-bs-theme'));
 
-                        logEnvironmentObservations();
+                        getWeather(strEmail);
+                        getEggs();
+                        getEnvironmentObservations();
 
                         $('#divRegister').slideToggle(function () {
                             $('#btnLogout').show();
@@ -738,212 +987,133 @@
             setColorMode(strMode);
         });
 
-        // Log eggs
-        $('#btnEggs').on('click', function () {
-            let intEggs = $('#numEggs').val();
+        // Fill observation inputs with current data from weather API
+        $('#btnFill').on('click', function () {
+            updateSession();
+            $.ajax({
+                type: 'GET',
+                url: `https://api.openweathermap.org/data/3.0/onecall?lat=${strLat}&lon=${strLon}&exclude=minutely,hourly,daily,alerts&units=imperial&appid=5e8668fb13050ff3f6df16196b1f5be3`,
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    console.log("Current Weather", result);
+                    $('#numTemp').val(Math.round(result.current.temp));
+                    $('#numHumidity').val(Math.round(result.current.humidity));
+                }
+            });
+        });
+
+        // Log observation
+        $('#btnLogObservation').on('click', function () {
+            updateSession();
+            let strTemp = $('#numTemp').val();
+            let strHumidity = $('#numHumidity').val();
+            let dtCurrentDate = new Date();
+
             $.ajax({
                 type: 'POST',
-                url: "http://www.simplecoop.swollenhippo.com/eggs.php",
+                url: "http://www.simplecoop.swollenhippo.com/environment.php",
                 data: {
                     SessionID: sessionStorage.getItem('SessionID'),
-                    eggs: intEggs,
-                    observationDateTime: new Date().toISOString()
+                    temperature: strTemp,
+                    observationDateTime: toLocalISOString(dtCurrentDate),
+                    humidity: strHumidity
                 },
                 error: function (e) {
                     console.log(e);
                 },
                 success: function (result) {
                     result = JSON.parse(result);
-                    
-                    filterEggs();
+                    console.log(result);
+
+                    strCurrentDate = formatDate(dtCurrentDate);
+                    tblObservations.row.add([
+                        strCurrentDate,
+                        strTemp,
+                        strHumidity
+                    ]).draw();
+
+                    grfObservations.data.labels.push(strCurrentDate.slice(0, 10));
+                    grfObservations.data.datasets[0].data.push(strTemp);
+                    grfObservations.data.datasets[1].data.push(strHumidity);
+                    grfObservations.update();
                 }
             });
-
         });
 
-        function getRandomObservationDatetime() {
-            // Get the current date
-            var currentDate = new Date();     // Generate a random number of days between 0 and 100
-            var randomDays = Math.floor(Math.random() * 101);     // Calculate the random date within the specified range
-            var randomDate = new Date(currentDate);
-            randomDate.setDate(currentDate.getDate() - randomDays);     // Format the date in ISO string format
-            var observationDatetime = randomDate.toISOString(); return observationDatetime;
-        }
-
-        // Function to generate a random observation datetime in the format YYYY-MM-DD
-        function getFormattedObservationDatetime() {
-            var currentDate = new Date();
-            var randomDays = Math.floor(Math.random() * 101);
-            var randomDate = new Date(currentDate);
-            randomDate.setDate(currentDate.getDate() - randomDays);
-
-            var randomHour = Math.floor(Math.random() * 24);
-            var randomMinute = Math.floor(Math.random() * 60);
-            var randomSecond = Math.floor(Math.random() * 60);
-
-            randomDate.setHours(randomHour, randomMinute, randomSecond);
-
-            // Format date as YYYY-MM-DD
-            var formattedDate = randomDate.toISOString().split('T')[0];
-
-            // Format time as HH:MM
-            var formattedTime = randomDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            return formattedDate + ' T ' + formattedTime;
-        }
-
-        // Function to generate a random temperature
-        function getRandomTemperature() {
-            return Math.random() * (90 - 42) + 42;
-        }
-
-        // Function to generate a random humidity
-        function getRandomHumidity() {
-            return Math.random() * (98 - 30) + 30;
-        }
-
-        function logEnvironmentObservations() {
-            let observations = []; // create an array to store observations for sorting later
-
-            for (let i = 0; i < 10; i++) {
-                const observationDatetime = getFormattedObservationDatetime();
-                const temperature = getRandomTemperature();
-                const humidity = getRandomHumidity();
-
-                observations.push({
-                    observationDatetime: observationDatetime,
-                    temperature: temperature,
-                    humidity: humidity
-                });
-            }
-
-            // Sort the random generated dates so that the Table is in order by date
-            observations.sort((a, b) => {
-                if (a.observationDatetime < b.observationDatetime) return 1;
-                if (a.observationDatetime > b.observationDatetime) return -1;
-                return 0;
-            });
-
-            // Append sorted observations to the table
-            observations.forEach(observation => {
-                $('#observationTableBody').append(
-                    `<tr>
-                        <td>${observation.observationDatetime}</td>
-                        <td>${observation.temperature.toFixed(2)}</td>
-                        <td>${observation.humidity.toFixed(2)}</td>
-                    </tr>`
-                );
-
-                const requestData = {
-                    SessionID: sessionStorage.getItem('SessionID'),
-                    temperature: observation.temperature,
-                    observationDateTime: observation.observationDatetime,
-                    humidity: observation.humidity
-                };
-
-                $.post('http://simplecoop.swollenhippo.com/environment.php', requestData, function (result) {
-                    result = JSON.parse(result);                   
-                });
-            });
-        }
-
-        let myGraph;
-
-        $('#btnLogObservation').on('click', function () {
-            var currentDate = new Date();
-
-            // Format date and time into YYYY-MM-DD
-            var formattedDate = currentDate.toISOString().split('T')[0];
-            var formattedTime = currentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            var observationDateTime = formattedDate + ' T ' + formattedTime;
-
-            var temperature = getRandomTemperature().toFixed(2);
-            var humidity = getRandomHumidity().toFixed(2);
-
-            // Append the observation data to the top row of the table
-            $('#observationTableBody').prepend(
-                `<tr>
-                    <td>${observationDateTime}</td>
-                    <td>${temperature}</td>
-                    <td>${humidity}</td>
-                </tr>`
-            );
-
-            generateGraph();
-            
+        // Switch to observations graph view
+        $('#btnObservationsGraph').on('click', function () {
+            console.log("Swapping to Observations Graph");
+            updateSession();
+            $('#divObservationsGraph').show();
+            $('#divObservationsTable').hide();
+            $('#btnObservationsGraph').hide();
+            $('#btnObservationsTable').show();
         });
 
-        // Function to switch between viewing data as table or graph
-        $('#viewOption').change(function () {
-            var selectedOption = $(this).val();
-            if (selectedOption === 'table') {
-                $('#divTable').show();
-                $('#divGraph').hide();
-            } else if (selectedOption === 'graph') {
-                $('#divTable').hide();
-                $('#divGraph').show();
-
-                generateGraph();
-            }
+        // Switch to observations table view
+        $('#btnObservationsTable').on('click', function () {
+            console.log("Swapping to Observations Table");
+            updateSession();
+            $('#divObservationsTable').show();
+            $('#divObservationsGraph').hide();
+            $('#btnObservationsTable').hide();
+            $('#btnObservationsGraph').show();
         });
 
-        // Generate Graph
-        function generateGraph() {
-            // Destroy the current graph and then refil it witht the updated table to update the graph
-            if (myGraph) {
-                myGraph.destroy();
-            }
-
-            // Get all needed data from the table
-            var observationRows = $('#observationTableBody tr');
-            var observationDates = [];
-            var temperatures = [];
-            var humidities = [];
-
-            observationRows.each(function () {
-                var observationDatetime = $(this).find('td:first').text();
-                var temperature = parseFloat($(this).find('td:nth-child(2)').text());
-                var humidity = parseFloat($(this).find('td:nth-child(3)').text());
-                observationDates.push(observationDatetime);
-                temperatures.push(temperature);
-                humidities.push(humidity);
-            });
-
-            // Reverse the arrays to display the most recent data on the right
-            observationDates.reverse();
-            temperatures.reverse();
-            humidities.reverse();
-
-            var ctx = document.getElementById('observationGraph').getContext('2d');
-            myGraph = new Chart(ctx, {
-                type: 'line',
+        // Log eggs
+        $('#btnEggs').on('click', function () {
+            updateSession();
+            let intEggs = $('#numEggs').val();
+            let dtCurrentDate = new Date();
+            $.ajax({
+                type: 'POST',
+                url: "http://www.simplecoop.swollenhippo.com/eggs.php",
                 data: {
-                    labels: observationDates,
-                    datasets: [{
-                        label: 'Temperature (F)',
-                        data: temperatures,
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1
-                    }, {
-                        label: 'Humidity (%)',
-                        data: humidities,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    eggs: intEggs,
+                    observationDateTime: toLocalISOString(dtCurrentDate)
                 },
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    }
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+
+                    strCurrentDate = formatDate(dtCurrentDate);
+                    tblEggs.row.add([
+                        strCurrentDate,
+                        intEggs
+                    ]).draw();
+
+                    grfEggs.data.labels.push(strCurrentDate.slice(0, 10));
+                    grfEggs.data.datasets[0].data.push(intEggs);
+                    grfEggs.update();
                 }
             });
-        }
+        });
+
+        // Switch to eggs graph view
+        $('#btnEggsGraph').on('click', function () {
+            console.log("Swapping to Eggs Graph");
+            updateSession();
+            $('#divEggsGraph').show();
+            $('#divEggsTable').hide();
+            $('#btnEggsGraph').hide();
+            $('#btnEggsTable').show();
+        });
+
+        // Switch to eggs table view
+        $('#btnEggsTable').on('click', function () {
+            console.log("Swapping to Eggs Table");
+            updateSession();
+            $('#divEggsTable').show();
+            $('#divEggsGraph').hide();
+            $('#btnEggsTable').hide();
+            $('#btnEggsGraph').show();
+        });
     </script>
 </body>
 
