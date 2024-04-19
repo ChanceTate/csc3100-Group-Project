@@ -359,6 +359,7 @@
         let grfObservations;
         let grfEggs;
         let fanSpeed = 0;
+        let heatLevelRangeValue;
 
         // For Testing Purposes
         // deleteUser('');
@@ -500,6 +501,7 @@
                                     $('#txtLow').text(Math.round(result.daily[0].temp.min) + "°F");
 
                                     // Set the current temperature as the default value for the range input
+                                    heatLevelRangeValue = Math.round(result.current.temp);
                                     $('#heatLevelRange').val(Math.round(result.current.temp));
                                     // Set the initial display value in the span element
                                     $('#heatLevelValue').text(Math.round(result.current.temp));
@@ -1242,19 +1244,16 @@
         }
     });
 
-    // Function to handle heat toggle
+    // Event listener for input on heat level range
     $('#heatLevelRange').on('input', function () {
-        const currentHeatLevelValue = parseFloat($(this).val());
-        const startHeatLevelValueText = $('#heatLevelValue').text().trim();
-        if (startHeatLevelValueText !== "") {
-            startHeatLevelValue = parseFloat(startHeatLevelValueText);
-        }
-        updateHeatControl(currentHeatLevelValue);
+        heatLevelValue = parseFloat($(this).val());
+        updateHeatControl();
     });
 
-    function updateHeatControl(currentHeatLevelValue) {
+    // Function to handle heat toggle
+    function updateHeatControl() {
         const heatToggle = document.getElementById('heatToggle');
-        if (!isNaN(startHeatLevelValue) && currentHeatLevelValue > startHeatLevelValue) {
+        if (heatLevelValue > heatLevelRangeValue) {
             heatToggle.checked = false;
             console.log('Heat turned off');
         } else {
