@@ -1247,11 +1247,64 @@
     // Function to enable dark mode
     function enableDarkMode() {
         $('html').attr('data-bs-theme', 'dark');
+        // Check if dark mode setting exists
+        $.ajax({
+            type: 'GET',
+            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+            data: {
+                SessionID: sessionStorage.getItem('SessionID'),
+                setting: 'darkModeEnabled'
+            },
+            success: function (result) {
+                if (result.length > 0) {
+                    // Dark mode setting exists, update it
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'darkModeEnabled',
+                        'true',
+                        'PUT'
+                    );
+                } else {
+                    // Dark mode setting doesn't exist, create it
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'darkModeEnabled',
+                        'true',
+                        'POST'
+                    );
+                }
+            }
+        });
     }
 
     // Function to disable dark mode
     function disableDarkMode() {
         $('html').attr('data-bs-theme', 'light');
+        $.ajax({
+            type: 'GET',
+            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+            data: {
+                SessionID: sessionStorage.getItem('SessionID'),
+                setting: 'darkModeEnabled'
+            },
+            success: function (result) {
+                if (result.length > 0) {
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'darkModeEnabled',
+                        'false',
+                        'PUT'
+                    );
+                } else {
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'darkModeEnabled',
+                        'false',
+                        'POST'
+                    );
+                }
+            }
+        });
     }
 
     // Function to handle fan toggle
@@ -1259,8 +1312,20 @@
         let fanEnabled = $(this).prop('checked');
         if (fanEnabled) {
             console.log('Fan turned on');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'true',
+                'PUT'
+            );
         } else {
             console.log('Fan turned off');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'false',
+                'PUT'
+            );
         }
     });
 
@@ -1276,21 +1341,45 @@
         if (heatLevelValue > heatLevelRangeValue) {
             heatToggle.checked = false;
             console.log('Heat turned off');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'heatEnabled',
+                'false',
+                'PUT'
+            );
         } else {
             heatToggle.checked = true;
             console.log('Heat turned on');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'heatEnabled',
+                'true',
+                'PUT'
+            );
         }
     }
 
-        // Function to handle light toggle
-        $('#lightToggle').on('change', function () {
-            let lightEnabled = $(this).prop('checked');
-            if (lightEnabled) {
-                console.log('Lights turned on');
-            } else {
-                console.log('Lights turned off');
-            }
-        });
+    // Function to handle light toggle
+    $('#lightToggle').on('change', function () {
+        let lightEnabled = $(this).prop('checked');
+        if (lightEnabled) {
+            console.log('Lights turned on');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'lightEnabled',
+                'true',
+                'PUT'
+            );
+        } else {
+            console.log('Lights turned off');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'lightEnabled',
+                'false',
+                'PUT'
+            );
+        }
+    });
 
     // Event listener for fan speed range input
     document.getElementById("fanSpeedRange").addEventListener("input", function() {
@@ -1299,8 +1388,20 @@
 
         if (parseInt(this.value) > 0) {
             fanToggle.checked = true;
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanSpeed',
+                this.value,
+                'PUT'
+            );
         } else {
             fanToggle.checked = false;
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanSpeed',
+                '0',
+                'PUT'
+            );
         }
     });
 
@@ -1310,20 +1411,39 @@
         if (!this.checked) {
             fanSpeedRange.value = 0;
             document.getElementById("fanSpeedValue").textContent = 0;
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'false',
+                'PUT'
+            );
+        } else {
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'true',
+                'PUT'
+            );
         }
     });
 
     // Event listener for heat level range input
     document.getElementById("heatLevelRange").addEventListener("input", function() {
         document.getElementById("heatLevelValue").textContent = this.value;
+        updateHeatControl();
     });
-
 
     // Event listener for decreasing fan speed
     $('#btnDecreaseFanSpeed').on('click', function () {
         if (fanSpeed > 0) {
             fanSpeed--;
             updateFanSpeedDisplay();
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanSpeed',
+                fanSpeed.toString(),
+                'PUT'
+            );
         }
 
     });
@@ -1333,6 +1453,12 @@
         if (fanSpeed < 3) {
             fanSpeed++;
             updateFanSpeedDisplay();
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanSpeed',
+                fanSpeed.toString(),
+                'PUT'
+            );
         }
     });
 
@@ -1341,11 +1467,42 @@
         let fanState = $(this).text();
         if (fanState === 'Turn On') {
             $(this).text('Turn Off');
-
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'true',
+                'PUT'
+            );
         } else {
             $(this).text('Turn On');
+            updateSettings(
+                sessionStorage.getItem('SessionID'),
+                'fanEnabled',
+                'false',
+                'PUT'
+            );
         }
     });
+
+    // Function to update settings
+    function updateSettings(sessionID, setting, value, method) {
+        $.ajax({
+            type: method,
+            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+            data: {
+                SessionID: sessionStorage.getItem('SessionID'),
+                setting: setting,
+                value: value
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            success: function (result) {
+                result = JSON.parse(result);
+                console.log(result);
+            }
+        });
+    }
 
     // Updates the state of the door
     function updateDoorStatusDisplay(doorState) {
