@@ -172,6 +172,26 @@
                         </div>
                     </div>
                 </div>
+                <!-- Door Control-->
+                <div class="card border-primary col-12">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Door Control</h5>
+                                        <div class="form-check form-switch mt-2">
+                                            <h6>Door Status</h6>
+                                            <input class="form-check-input" type="checkbox" id="door-toggle">
+                                            <label class="form-check-label" for="door-toggle">Door</label>
+                                        </div>
+                                        <span id="doorStatusText">Closed</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <!-- Fan and Heat Control -->
                 <div class="card border-primary col-12">
                     <div class="card-body">
@@ -1305,6 +1325,7 @@
             fanSpeed--;
             updateFanSpeedDisplay();
         }
+
     });
 
     // Event listener for increasing fan speed
@@ -1326,6 +1347,43 @@
         }
     });
 
+    // Updates the state of the door
+    function updateDoorStatusDisplay(doorState) {
+        $("#doorStatusText").text(doorState); // Assuming you have an element with id "doorStatusText"
+    };
+
+    // Door Functionality
+    $('#door-toggle').on('change', function() {
+        let doorState;
+        if ($(this).prop('checked')) {
+            doorState = "Open";
+        } else {
+            doorState = "Closed";
+        }
+
+        updateSettings(sessionStorage.getItem('SessionID'), 'door_status', doorState, 'PUT');
+        updateDoorStatusDisplay(doorState);
+    });
+
+    // Function to update settings
+    function updateSettings(sessionID, setting, value, method) {
+        $.ajax({
+            type: method,
+            url: "http://www.simplecoop.swollenhippo.com/settings.php",
+            data: {
+                SessionID: sessionStorage.getItem('SessionID'),
+                setting: setting,
+                value: value
+            },
+            error: function (e) {
+                console.log(e);
+            },
+            success: function (result) {
+                result = JSON.parse(result);
+                console.log(result);
+            }
+        });
+    }
     </script>
 </body>
 
