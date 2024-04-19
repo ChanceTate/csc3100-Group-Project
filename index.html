@@ -24,10 +24,7 @@
             <a class="navbar-brand text-light">SwollenHippo Smart Coop</a>
         </div>
         <button id="btnLogout" class="btn btn-info" style="display:none">Logout</button>
-        <button type="button" class="btn border-0" id="btnColorMode" aria-label="Toggle Dark Mode">
-            <i class="fa-solid fa-moon fs-4"></i>
-            <i style="display: none" class="fa-solid fa-sun fs-4"></i>
-        </button>
+        <button id="btnOpenSettings" class="btn btn-primary">Settings</button>
     </nav>
     <!-- Main Content -->
     <div class="d-flex justify-content-center align-items-center py-5 mx-4">
@@ -144,6 +141,82 @@
                         <a href="#" class="col-12 text-center btnToggle" data-card="Register">Return to login</a>
                     </div>
                 </form>
+            </div>
+        </div>
+       <!-- Settings Dashboard -->
+        <div id="settingsDashboard" class="settings-dashboard" style="display: none;">
+            <button id="btnCloseSettings" class="btn-close btn-close-grey" aria-label="Close"></button>
+            <h3 class="text-center">Settings</h3>
+            <div class="settings-widget">
+                <!-- Mode Control Card -->
+                <div class="card border-primary col-12 mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Mode Control</h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="darkModeToggle" checked>
+                                    <label class="form-check-label" for="darkModeToggle">
+                                        Dark Mode
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center justify-content-end">
+                                <div class="form-check form-switch">
+                                    <label class="form-check-label mr-3" for="lightToggle">
+                                        Lights
+                                    </label>
+                                    <input class="form-check-input" type="checkbox" id="lightToggle" checked>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Fan and Heat Control -->
+                <div class="card border-primary col-12">
+                    <div class="card-body">
+                        <div class="row">
+                            <!-- Fan Control -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Fan Control</h5>
+                                        <div>
+                                            <h6>Fan Speed</h6>
+                                            <input type="range" class="form-range" id="fanSpeedRange" min="0" max="3" value="0">
+                                            <span id="fanSpeedValue">0</span>
+                                            <div class="form-check form-switch mt-2">
+                                                <input class="form-check-input" type="checkbox" id="fanToggle">
+                                                <label class="form-check-label" for="fanToggle" checked>
+                                                    Fan
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Heat Control -->
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body text-center">
+                                        <h5 class="card-title">Heat Control</h5>
+                                        <div>
+                                            <h6>Heat Level</h6>
+                                            <input type="range" class="form-range" id="heatLevelRange" min="50" max="90">
+                                            <span id="heatLevelValue"></span>
+                                            <div class="form-check form-switch mt-2">
+                                                <input class="form-check-input" type="checkbox" id="heatToggle">
+                                                <label class="form-check-label" for="heatToggle" checked>
+                                                    Heat
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <!-- Dashboard -->
@@ -285,6 +358,7 @@
         let tblEggs = $('#tblEggs').DataTable({ autoWidth: false });
         let grfObservations;
         let grfEggs;
+        let fanSpeed = 0;
 
         // For Testing Purposes
         // deleteUser('');
@@ -424,6 +498,11 @@
                                     $('#txtTemp').text(Math.round(result.current.temp) + "°F");
                                     $('#txtHigh').text(Math.round(result.daily[0].temp.max) + "°F");
                                     $('#txtLow').text(Math.round(result.daily[0].temp.min) + "°F");
+
+                                    // Set the current temperature as the default value for the range input
+                                    $('#heatLevelRange').val(Math.round(result.current.temp));
+                                    // Set the initial display value in the span element
+                                    $('#heatLevelValue').text(Math.round(result.current.temp));
                                 }
                             });
                         }
@@ -1114,6 +1193,140 @@
             $('#btnEggsTable').hide();
             $('#btnEggsGraph').show();
         });
+
+        $('#btnOpenSettings').on('click', function () {
+        $('#settingsDashboard').show();
+        $('#divDashboard').hide();
+
+    });
+
+    // Function to open settings dashboard
+    $('#btnOpenSettings').on('click', function () {
+        $('#settingsDashboard').show();
+        $('#divDashboard').hide();
+    });
+
+    // Function to close settings dashboard
+    $('#btnCloseSettings').on('click', function () {
+        $('#settingsDashboard').hide();
+        $('#divDashboard').show();
+    });
+
+    // Function to handle dark mode toggle
+    $('#darkModeToggle').on('change', function () {
+        let darkModeEnabled = $(this).prop('checked');
+        if (darkModeEnabled) {
+            enableDarkMode();
+        } else {
+            disableDarkMode();
+        }
+    });
+
+    // Function to enable dark mode
+    function enableDarkMode() {
+        $('html').attr('data-bs-theme', 'dark');
+    }
+
+    // Function to disable dark mode
+    function disableDarkMode() {
+        $('html').attr('data-bs-theme', 'light');
+    }
+
+    // Function to handle fan toggle
+    $('#fanToggle').on('change', function () {
+        let fanEnabled = $(this).prop('checked');
+        if (fanEnabled) {
+            console.log('Fan turned on');
+        } else {
+            console.log('Fan turned off');
+        }
+    });
+
+    // Function to handle heat toggle
+    $('#heatLevelRange').on('input', function () {
+        const currentHeatLevelValue = parseFloat($(this).val());
+        const startHeatLevelValueText = $('#heatLevelValue').text().trim();
+        if (startHeatLevelValueText !== "") {
+            startHeatLevelValue = parseFloat(startHeatLevelValueText);
+        }
+        updateHeatControl(currentHeatLevelValue);
+    });
+
+    function updateHeatControl(currentHeatLevelValue) {
+        const heatToggle = document.getElementById('heatToggle');
+        if (!isNaN(startHeatLevelValue) && currentHeatLevelValue > startHeatLevelValue) {
+            heatToggle.checked = false;
+            console.log('Heat turned off');
+        } else {
+            heatToggle.checked = true;
+            console.log('Heat turned on');
+        }
+    }
+
+        // Function to handle light toggle
+        $('#lightToggle').on('change', function () {
+            let lightEnabled = $(this).prop('checked');
+            if (lightEnabled) {
+                console.log('Lights turned on');
+            } else {
+                console.log('Lights turned off');
+            }
+        });
+
+    // Event listener for fan speed range input
+    document.getElementById("fanSpeedRange").addEventListener("input", function() {
+        document.getElementById("fanSpeedValue").textContent = this.value;
+        var fanToggle = document.getElementById("fanToggle");
+
+        if (parseInt(this.value) > 0) {
+            fanToggle.checked = true;
+        } else {
+            fanToggle.checked = false;
+        }
+    });
+
+    // Event listener for fan toggle checkbox
+    document.getElementById("fanToggle").addEventListener("change", function() {
+        var fanSpeedRange = document.getElementById("fanSpeedRange");
+        if (!this.checked) {
+            fanSpeedRange.value = 0;
+            document.getElementById("fanSpeedValue").textContent = 0;
+        }
+    });
+
+    // Event listener for heat level range input
+    document.getElementById("heatLevelRange").addEventListener("input", function() {
+        document.getElementById("heatLevelValue").textContent = this.value;
+    });
+
+
+    // Event listener for decreasing fan speed
+    $('#btnDecreaseFanSpeed').on('click', function () {
+        if (fanSpeed > 0) {
+            fanSpeed--;
+            updateFanSpeedDisplay();
+        }
+    });
+
+    // Event listener for increasing fan speed
+    $('#btnIncreaseFanSpeed').on('click', function () {
+        if (fanSpeed < 3) {
+            fanSpeed++;
+            updateFanSpeedDisplay();
+        }
+    });
+
+    // Event listener for fan toggle
+    $('#btnFanToggle').on('click', function () {
+        let fanState = $(this).text();
+        if (fanState === 'Turn On') {
+            $(this).text('Turn Off');
+
+        } else {
+            $(this).text('Turn On');
+        }
+    });
+
     </script>
 </body>
 
