@@ -23,8 +23,8 @@
         <div class="container-fluid">
             <a class="navbar-brand text-light">SwollenHippo Smart Coop</a>
         </div>
-        <button id="btnLogout" class="btn btn-info" style="display:none">Logout</button>
-        <button id="btnOpenSettings" class="btn btn-primary">Settings</button>
+        <button id="btnLogout" class="btn btn-info" style="display:none;">Logout</button>
+        <button id="btnOpenSettings" class="btn btn-primary" style="display:none;">Settings</button>
     </nav>
     <!-- Main Content -->
     <div class="d-flex justify-content-center align-items-center py-5 mx-4">
@@ -144,7 +144,7 @@
             </div>
         </div>
        <!-- Settings Dashboard -->
-        <div id="settingsDashboard" class="settings-dashboard" style="display: none;">
+        <div id="settingsDashboard" class="col-12" style="display: none;">
             <button id="btnCloseSettings" class="btn-close btn-close-grey" aria-label="Close"></button>
             <h3 class="text-center">Settings</h3>
             <div class="settings-widget">
@@ -447,6 +447,10 @@
             });
         }
 
+        ///////////////////////////////////////
+        //// Dates, Formatting, and Weather ///
+        ///////////////////////////////////////
+
         // Formats a date object to a string in the format YYYY-MM-DD HH:MM AM/PM
         function formatDate(date) {
             const year = date.getFullYear();
@@ -534,6 +538,33 @@
             });
         }
 
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+
+        ///////////////////////////////////////
+        //// Settings and State ///////////////
+        ///////////////////////////////////////
+
+        // Function to update settings
+        function updateSettings(sessionID, setting, value, method) {
+            $.ajax({
+                type: method,
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionStorage.getItem('SessionID'),
+                    setting: setting,
+                    value: value
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+                    console.log(result);
+                }
+            });
+        }
+
         // Gets colormode from the database and changes the theme accordingly
         function getSettings() {
             if (!sessionStorage.getItem("SessionID")) {
@@ -559,16 +590,12 @@
                         let strMode = result.Value;
                         if (strMode == 'dark') {
                             $('html').attr('data-bs-theme', 'dark');
-                            $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
+                            $('#darkModeToggle').prop('checked', true);
                             localStorage.setItem('colormode', 'dark');
-                            $(".fa-moon").hide();
-                            $(".fa-sun").show();
                         } else {
                             $('html').attr('data-bs-theme', 'light');
-                            $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
+                            $('#darkModeToggle').prop('checked', false);
                             localStorage.setItem('colormode', 'light');
-                            $(".fa-moon").show();
-                            $(".fa-sun").hide();
                         }
                     }
                 }
@@ -613,16 +640,55 @@
                                 console.log(result);
 
                                 localStorage.setItem('colormode', strMode);
-                                $("#btnColorMode").prop('disabled', false);
                             }
                         });
                     }
                 });
             } else {
                 localStorage.setItem('colormode', strMode);
-                $("#btnColorMode").prop('disabled', false);
             }
         }
+
+        function logInToggle() {
+            if ($('#divLogin').is(':visible')) {
+                $('#divLogin').slideToggle(function () {
+                    $('#btnLogout').show();
+                    $('#btnOpenSettings').show();
+                    $('#divDashboard').slideToggle();
+                });
+            } else if ($('#divRegister').is(':visible')) {
+                $('#divRegister').slideToggle(function () {
+                    $('#btnLogout').show();
+                    $('#btnOpenSettings').show();
+                    $('#divDashboard').slideToggle();
+                });
+            } else {
+                $('#btnLogout').show();
+                $('#btnOpenSettings').show();
+                $('#divDashboard').slideToggle();
+            }
+        }
+
+        function logOutToggle() {
+            if ($('#divDashboard').is(':visible')) {
+                $('#divDashboard').slideUp(function () {
+                    $('#btnLogout').hide();
+                    $('#btnOpenSettings').hide();
+                    $('#divLogin').slideDown();
+                })
+            } else {
+                $('#btnLogout').hide();
+                $('#btnOpenSettings').hide();
+                $('#divLogin').slideDown();
+            }
+        }
+
+        ///////////////////////////////////////
+        ///////////////////////////////////////
+
+        ///////////////////////////////////////
+        //// Tables, Data, and Population /////
+        ///////////////////////////////////////
 
         // Populates environment observations table and graph
         function getEnvironmentObservations() {
@@ -764,12 +830,15 @@
                     });
                 }
             });
-
         }
+
+        ///////////////////////////////////////
+        ///////////////////////////////////////
 
         $(document).ready(function () {
             $('#txtDay').text(getCurrentDayOfWeek());
-            // Checks if there is anything in sessionStorage
+            
+            // Check if there is a session ID in session storage, and if so, validate or discard it, otherwise show the login screen
             if (sessionStorage.getItem("SessionID")) {
                 $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
                     if (result.SessionID != sessionStorage.getItem("SessionID")) {
@@ -780,7 +849,7 @@
 
                     if (!strEmail) {
                         console.log("Could not find user email from session ID");
-                        $("#divLogin").slideToggle();
+                        logOutToggle();
                         return;
                     }
 
@@ -791,756 +860,533 @@
                         getEggs();
                         getEnvironmentObservations();
 
-                        $('#btnLogout').show();
-                        $("#divDashboard").slideToggle();
+                        logInToggle();
                     } else {
                         console.log("Invalid SessionID. Displaying Login")
-                        $("#divLogin").slideToggle();
-                        if (localStorage.getItem('colormode') == 'dark') {
-                            $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                            $(".fa-moon").hide();
-                            $(".fa-sun").show();
-                        }
+                        logOutToggle();
                     }
                 });
             } else {
                 console.log("No session ID found. Displaying Login")
-                $("#divLogin").slideToggle();
-                if (localStorage.getItem('colormode') == 'dark') {
-                    $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                    $(".fa-moon").hide();
-                    $(".fa-sun").show();
+                logOutToggle();
+            }
+
+            //////////////////////////////////////////////////////////////
+            //// Authentication, Login, Registration, Window Toggling ////
+            //////////////////////////////////////////////////////////////
+
+            // Toggles login and register cards using the jQuery "is visible" tool
+            $('.btnToggle').on('click', function () {
+                if ($('#divLogin').is(':visible')) {
+                    console.log("Toggling to Register")
+                    $('#divLogin').slideToggle(function () {
+                        $('#divRegister').slideToggle();
+                    });
                 }
-            }
-        });
-
-        // Toggles login and register cards using the jQuery "is visible" tool
-        $('.btnToggle').on('click', function () {
-            if ($('#divLogin').is(':visible')) {
-                console.log("Toggling to Register")
-                $('#divLogin').slideToggle(function () {
-                    $('#divRegister').slideToggle();
-                });
-            }
-            else {
-                console.log("Toggling to Login")
-                $('#divRegister').slideToggle(function () {
-                    $('#divLogin').slideToggle();
-                });
-            }
-        });
-
-        // Logout button functionality
-        $('#btnLogout').on('click', function () {
-            $.ajax({
-                url: 'http://www.thesimplehomestead.com/simpletime/sessions.php',
-                type: 'DELETE',
-                data: { SessionID: sessionStorage.getItem('SessionID') },
-                success: function (result) {
-                    result = JSON.parse(result);
-                    console.log(result);
-                    sessionStorage.removeItem('SessionID');
-
-                    tblObservations.clear().draw();
-                    tblEggs.clear().draw();
-                    grfObservations.destroy();
-                    grfEggs.destroy();
-
-                    $('#divDashboard').slideUp(function () {
-                        $('#btnLogout').hide();
-                        $('#divLogin').slideDown();
-                    })
+                else {
+                    console.log("Toggling to Login")
+                    $('#divRegister').slideToggle(function () {
+                        $('#divLogin').slideToggle();
+                    });
                 }
             });
-        })
 
-        // Login button functionality
-        $('#btnLogin').on('click', function () {
-            let strEmail = $('#txtLoginEmail').val();
-            let strPassword = $('#txtLoginPassword').val();
+            // Logout button functionality
+            $('#btnLogout').on('click', function () {
+                $.ajax({
+                    url: 'http://www.thesimplehomestead.com/simpletime/sessions.php',
+                    type: 'DELETE',
+                    data: { SessionID: sessionStorage.getItem('SessionID') },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        console.log(result);
+                        sessionStorage.removeItem('SessionID');
 
-            $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
-                result = JSON.parse(result);
+                        tblObservations.clear().draw();
+                        tblEggs.clear().draw();
+                        grfObservations.destroy();
+                        grfEggs.destroy();
 
-                if (result.Outcome != undefined) {
-                    Swal.fire({
-                        title: "Oops!",
-                        html: "<p>Invalid email or password!</p>",
-                        icon: "error",
-                    });
-
-                    return;
-                }
-                sessionStorage.setItem("SessionID", result.SessionID);
-
-                getWeather(strEmail);
-                getSettings();
-                getEggs();
-                getEnvironmentObservations();
-
-                $('#txtLoginEmail').val('');
-                $('#txtLoginPassword').val('');
-                $('#divLogin').slideToggle(function () {
-                    $('#btnLogout').show();
-                    $('#divDashboard').slideToggle();
+                        logOutToggle();
+                    }
                 });
-
             })
-        });
 
-        // Register button functionality
-        $('#btnRegister').on('click', function () {
-            let strFirstName = $('#txtFirstName').val();
-            let strLastName = $('#txtLastName').val();
-            let strEmail = $('#txtRegisterEmail').val();
-            let strPassword = $('#txtRegisterPassword').val();
-            let strStreetAddress1 = $('#txtStreetAddress1').val();
-            let strStreetAddress2 = $('#txtStreetAddress2').val();
-            let strCity = $('#txtCity').val();
-            let strState = $('#txtState').val();
-            let strZip = $('#txtZip').val();
-            let strPhone = $('#txtPhone').val();
-            let strCoopID = $('#txtCoopID').val();
+            // Login button functionality
+            $('#btnLogin').on('click', function () {
+                let strEmail = $('#txtLoginEmail').val();
+                let strPassword = $('#txtLoginPassword').val();
 
-            let blnError = false;
-            let strErrorMessage = "";
+                $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
+                    result = JSON.parse(result);
 
-            let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-            if (!regexEmail.exec(strEmail)) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
-            }
-
-            let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
-            if (!regexPassword.exec(strPassword)) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
-            }
-
-            if (strFirstName.length < 2) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid First Name.</p>";
-            }
-
-            if (strLastName.length < 2) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Last Name.</p>";
-            }
-
-            if (strStreetAddress1.length < 5) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Street Address.</p>";
-            }
-
-            // none for address 2, that is allowed to be blank
-
-            if (strCity.length < 2) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid City.</p>";
-            }
-
-            if (strState.length < 2) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid State.</p>";
-            }
-
-            let regexZip = /\d{5}([ \-]\d{4})?/;
-            if (!regexZip.exec(strZip)) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid ZIP Code.</p>";
-            }
-
-            let regexPhoneNum = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
-            if (!regexPhoneNum.exec(strPhone)) {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Invalid Phone Number.</p>";
-            }
-
-            // Assuming IDs are length 8, may change later!
-            if (strCoopID !== 'PTEYA3J6') {
-                blnError = true;
-                strErrorMessage = strErrorMessage + "<p>Coop ID should be PTEYA3J6</p>";
-            }
-
-            if (blnError == true) {
-                console.log(strErrorMessage);
-                Swal.fire({
-                    title: "Oops!",
-                    html: strErrorMessage,
-                    icon: "error",
-                });
-            } else {
-                $.getJSON("http://simplecoop.swollenhippo.com/users.php", { Email: strEmail }, function (result) {
-                    if (result != null) {
+                    if (result.Outcome != undefined) {
                         Swal.fire({
                             title: "Oops!",
-                            html: "<p>Account with that email already exists.</p>",
+                            html: "<p>Invalid email or password!</p>",
                             icon: "error",
                         });
 
                         return;
                     }
+                    sessionStorage.setItem("SessionID", result.SessionID);
 
-                    $.post(
-                        "http://simplecoop.swollenhippo.com/users.php",
-                        {
-                            Email: strEmail,
-                            Password: strPassword,
-                            FirstName: strFirstName,
-                            LastName: strLastName,
-                            CoopID: strCoopID,
-                        },
-                        function (result) {
-                            result = JSON.parse(result);
+                    getWeather(strEmail);
+                    getSettings();
+                    getEggs();
+                    getEnvironmentObservations();
 
-                            if (result.Error) {
-                                Swal.fire({
-                                    title: "Oops!",
-                                    html: "<p>" + result.Error + "</p>",
-                                    icon: "error",
-                                });
-                            }
-                        }
-                    )
+                    $('#txtLoginEmail').val('');
+                    $('#txtLoginPassword').val('');
+                    logInToggle();
+                })
+            });
 
-                    $.post(
-                        "http://simplecoop.swollenhippo.com/useraddress.php",
-                        {
-                            Email: strEmail,
-                            Street1: strStreetAddress1,
-                            Street2: strStreetAddress2,
-                            City: strCity,
-                            State: strState,
-                            ZIP: strZip,
-                        },
-                        function (result) {
-                            result = JSON.parse(result);
+            // Register button functionality
+            $('#btnRegister').on('click', function () {
+                let strFirstName = $('#txtFirstName').val();
+                let strLastName = $('#txtLastName').val();
+                let strEmail = $('#txtRegisterEmail').val();
+                let strPassword = $('#txtRegisterPassword').val();
+                let strStreetAddress1 = $('#txtStreetAddress1').val();
+                let strStreetAddress2 = $('#txtStreetAddress2').val();
+                let strCity = $('#txtCity').val();
+                let strState = $('#txtState').val();
+                let strZip = $('#txtZip').val();
+                let strPhone = $('#txtPhone').val();
+                let strCoopID = $('#txtCoopID').val();
 
-                            if (result.Error) {
-                                Swal.fire({
-                                    title: "Oops!",
-                                    html: "<p>" + result.Error + "</p>",
-                                    icon: "error",
-                                });
-                            }
-                        }
-                    )
+                let blnError = false;
+                let strErrorMessage = "";
 
-                    $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
-                        result = JSON.parse(result);
+                let regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+                if (!regexEmail.exec(strEmail)) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid Email.</p>";
+                }
 
-                        if (result.Outcome != undefined) {
+                let regexPassword = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W)(?!.* ).{8,16}$/;
+                if (!regexPassword.exec(strPassword)) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Password must be 8-16 characters, including a lowercase and uppercase letter, a number, and a special character.</p>";
+                }
+
+                if (strFirstName.length < 2) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid First Name.</p>";
+                }
+
+                if (strLastName.length < 2) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid Last Name.</p>";
+                }
+
+                if (strStreetAddress1.length < 5) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid Street Address.</p>";
+                }
+
+                // none for address 2, that is allowed to be blank
+
+                if (strCity.length < 2) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid City.</p>";
+                }
+
+                if (strState.length < 2) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid State.</p>";
+                }
+
+                let regexZip = /\d{5}([ \-]\d{4})?/;
+                if (!regexZip.exec(strZip)) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid ZIP Code.</p>";
+                }
+
+                let regexPhoneNum = /^\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/;
+                if (!regexPhoneNum.exec(strPhone)) {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Invalid Phone Number.</p>";
+                }
+
+                // Assuming IDs are length 8, may change later!
+                if (strCoopID !== 'PTEYA3J6') {
+                    blnError = true;
+                    strErrorMessage = strErrorMessage + "<p>Coop ID should be PTEYA3J6</p>";
+                }
+
+                if (blnError == true) {
+                    console.log(strErrorMessage);
+                    Swal.fire({
+                        title: "Oops!",
+                        html: strErrorMessage,
+                        icon: "error",
+                    });
+                } else {
+                    $.getJSON("http://simplecoop.swollenhippo.com/users.php", { Email: strEmail }, function (result) {
+                        if (result != null) {
                             Swal.fire({
                                 title: "Oops!",
-                                html: "<p>There was an issue while loggin you in, please try again!</p>",
+                                html: "<p>Account with that email already exists.</p>",
                                 icon: "error",
                             });
 
                             return;
                         }
 
-                        $('#txtFirstName').val('');
-                        $('#txtLastName').val('');
-                        $('#txtRegisterEmail').val('');
-                        $('#txtRegisterPassword').val('');
-                        $('#txtStreetAddress1').val('');
-                        $('#txtStreetAddress2').val('');
-                        $('#txtCity').val('');
-                        $('#txtState').val('');
-                        $('#txtZip').val('');
-                        $('#txtPhone').val('');
-                        $('#txtCoopID').val('');
+                        $.post(
+                            "http://simplecoop.swollenhippo.com/users.php",
+                            {
+                                Email: strEmail,
+                                Password: strPassword,
+                                FirstName: strFirstName,
+                                LastName: strLastName,
+                                CoopID: strCoopID,
+                            },
+                            function (result) {
+                                result = JSON.parse(result);
 
-                        sessionStorage.setItem("SessionID", result.SessionID);
-                        setColorMode($('html').attr('data-bs-theme'));
+                                if (result.Error) {
+                                    Swal.fire({
+                                        title: "Oops!",
+                                        html: "<p>" + result.Error + "</p>",
+                                        icon: "error",
+                                    });
+                                }
+                            }
+                        )
 
-                        getWeather(strEmail);
-                        getEggs();
-                        getEnvironmentObservations();
+                        $.post(
+                            "http://simplecoop.swollenhippo.com/useraddress.php",
+                            {
+                                Email: strEmail,
+                                Street1: strStreetAddress1,
+                                Street2: strStreetAddress2,
+                                City: strCity,
+                                State: strState,
+                                ZIP: strZip,
+                            },
+                            function (result) {
+                                result = JSON.parse(result);
 
-                        $('#divRegister').slideToggle(function () {
-                            $('#btnLogout').show();
-                            $('#divDashboard').slideToggle();
-                        });
+                                if (result.Error) {
+                                    Swal.fire({
+                                        title: "Oops!",
+                                        html: "<p>" + result.Error + "</p>",
+                                        icon: "error",
+                                    });
+                                }
+                            }
+                        )
+
+                        $.post("http://www.simplecoop.swollenhippo.com/sessions.php", { Email: strEmail, Password: strPassword }, function (result) {
+                            result = JSON.parse(result);
+
+                            if (result.Outcome != undefined) {
+                                Swal.fire({
+                                    title: "Oops!",
+                                    html: "<p>There was an issue while loggin you in, please try again!</p>",
+                                    icon: "error",
+                                });
+
+                                return;
+                            }
+
+                            $('#txtFirstName').val('');
+                            $('#txtLastName').val('');
+                            $('#txtRegisterEmail').val('');
+                            $('#txtRegisterPassword').val('');
+                            $('#txtStreetAddress1').val('');
+                            $('#txtStreetAddress2').val('');
+                            $('#txtCity').val('');
+                            $('#txtState').val('');
+                            $('#txtZip').val('');
+                            $('#txtPhone').val('');
+                            $('#txtCoopID').val('');
+
+                            sessionStorage.setItem("SessionID", result.SessionID);
+                            setColorMode($('html').attr('data-bs-theme'));
+
+                            getWeather(strEmail);
+                            getEggs();
+                            getEnvironmentObservations();
+
+                            logInToggle();
+                        })
                     })
-                })
-            }
-        });
-
-        // Dark mode toggle
-        $('#btnColorMode').on('click', function () {
-            $("#btnColorMode").prop('disabled', true);
-            let strMode = $('html').attr('data-bs-theme');
-            if (strMode == 'light') {
-                $('html').attr('data-bs-theme', 'dark');
-                $("#btnColorMode").attr('aria-label', 'Toggle Light Mode');
-                $(".fa-moon").hide();
-                $(".fa-sun").show();
-                strMode = 'dark';
-            } else {
-                $('html').attr('data-bs-theme', 'light');
-                $("#btnColorMode").attr('aria-label', 'Toggle Dark Mode');
-                $(".fa-moon").show();
-                $(".fa-sun").hide();
-                strMode = 'light';
-            }
-
-            setColorMode(strMode);
-        });
-
-        // Fill observation inputs with current data from weather API
-        $('#btnFill').on('click', function () {
-            updateSession();
-            $.ajax({
-                type: 'GET',
-                url: `https://api.openweathermap.org/data/3.0/onecall?lat=${strLat}&lon=${strLon}&exclude=minutely,hourly,daily,alerts&units=imperial&appid=5e8668fb13050ff3f6df16196b1f5be3`,
-                error: function (e) {
-                    console.log(e);
-                },
-                success: function (result) {
-                    console.log("Current Weather", result);
-                    $('#numTemp').val(Math.round(result.current.temp));
-                    $('#numHumidity').val(Math.round(result.current.humidity));
                 }
             });
-        });
 
-        // Log observation
-        $('#btnLogObservation').on('click', function () {
-            updateSession();
-            let strTemp = $('#numTemp').val();
-            let strHumidity = $('#numHumidity').val();
-            let dtCurrentDate = new Date();
+            //////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////
 
-            $.ajax({
-                type: 'POST',
-                url: "http://www.simplecoop.swollenhippo.com/environment.php",
-                data: {
-                    SessionID: sessionStorage.getItem('SessionID'),
-                    temperature: strTemp,
-                    observationDateTime: toLocalISOString(dtCurrentDate),
-                    humidity: strHumidity
-                },
-                error: function (e) {
-                    console.log(e);
-                },
-                success: function (result) {
-                    result = JSON.parse(result);
-                    console.log(result);
+            //////////////////////////////////////////////////////////////
+            //// Weather, Observations, General Dashboard Data ///////////
+            //////////////////////////////////////////////////////////////
 
-                    strCurrentDate = formatDate(dtCurrentDate);
-                    tblObservations.row.add([
-                        strCurrentDate,
-                        strTemp,
-                        strHumidity
-                    ]).draw();
+            // Fill observation inputs with current data from weather API
+            $('#btnFill').on('click', function () {
+                updateSession();
+                $.ajax({
+                    type: 'GET',
+                    url: `https://api.openweathermap.org/data/3.0/onecall?lat=${strLat}&lon=${strLon}&exclude=minutely,hourly,daily,alerts&units=imperial&appid=5e8668fb13050ff3f6df16196b1f5be3`,
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        console.log("Current Weather", result);
+                        $('#numTemp').val(Math.round(result.current.temp));
+                        $('#numHumidity').val(Math.round(result.current.humidity));
+                    }
+                });
+            });
 
-                    grfObservations.data.labels.push(strCurrentDate.slice(0, 10));
-                    grfObservations.data.datasets[0].data.push(strTemp);
-                    grfObservations.data.datasets[1].data.push(strHumidity);
-                    grfObservations.update();
+            // Log observation
+            $('#btnLogObservation').on('click', function () {
+                updateSession();
+                let strTemp = $('#numTemp').val();
+                let strHumidity = $('#numHumidity').val();
+                let dtCurrentDate = new Date();
+
+                $.ajax({
+                    type: 'POST',
+                    url: "http://www.simplecoop.swollenhippo.com/environment.php",
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID'),
+                        temperature: strTemp,
+                        observationDateTime: toLocalISOString(dtCurrentDate),
+                        humidity: strHumidity
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        console.log(result);
+
+                        strCurrentDate = formatDate(dtCurrentDate);
+                        tblObservations.row.add([
+                            strCurrentDate,
+                            strTemp,
+                            strHumidity
+                        ]).draw();
+
+                        grfObservations.data.labels.push(strCurrentDate.slice(0, 10));
+                        grfObservations.data.datasets[0].data.push(strTemp);
+                        grfObservations.data.datasets[1].data.push(strHumidity);
+                        grfObservations.update();
+                    }
+                });
+            });
+
+            // Switch to observations graph view
+            $('#btnObservationsGraph').on('click', function () {
+                console.log("Swapping to Observations Graph");
+                updateSession();
+                $('#divObservationsGraph').show();
+                $('#divObservationsTable').hide();
+                $('#btnObservationsGraph').hide();
+                $('#btnObservationsTable').show();
+            });
+
+            // Switch to observations table view
+            $('#btnObservationsTable').on('click', function () {
+                console.log("Swapping to Observations Table");
+                updateSession();
+                $('#divObservationsTable').show();
+                $('#divObservationsGraph').hide();
+                $('#btnObservationsTable').hide();
+                $('#btnObservationsGraph').show();
+            });
+
+            // Log eggs
+            $('#btnEggs').on('click', function () {
+                updateSession();
+                let intEggs = $('#numEggs').val();
+                let dtCurrentDate = new Date();
+                $.ajax({
+                    type: 'POST',
+                    url: "http://www.simplecoop.swollenhippo.com/eggs.php",
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID'),
+                        eggs: intEggs,
+                        observationDateTime: toLocalISOString(dtCurrentDate)
+                    },
+                    error: function (e) {
+                        console.log(e);
+                    },
+                    success: function (result) {
+                        result = JSON.parse(result);
+                        console.log(result);
+
+                        strCurrentDate = formatDate(dtCurrentDate);
+                        tblEggs.row.add([
+                            strCurrentDate,
+                            intEggs
+                        ]).draw();
+
+                        grfEggs.data.labels.push(strCurrentDate.slice(0, 10));
+                        grfEggs.data.datasets[0].data.push(intEggs);
+                        grfEggs.update();
+                    }
+                });
+            });
+
+            // Switch to eggs graph view
+            $('#btnEggsGraph').on('click', function () {
+                console.log("Swapping to Eggs Graph");
+                updateSession();
+                $('#divEggsGraph').show();
+                $('#divEggsTable').hide();
+                $('#btnEggsGraph').hide();
+                $('#btnEggsTable').show();
+            });
+
+            // Switch to eggs table view
+            $('#btnEggsTable').on('click', function () {
+                console.log("Swapping to Eggs Table");
+                updateSession();
+                $('#divEggsTable').show();
+                $('#divEggsGraph').hide();
+                $('#btnEggsTable').hide();
+                $('#btnEggsGraph').show();
+            });
+
+            //////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////
+
+            //////////////////////////////////////////////////////////////
+            /// Settings /////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////
+
+            // Function to open settings dashboard
+            $('#btnOpenSettings').on('click', function () {
+                $('#divDashboard').slideToggle(function() {
+                    $('#settingsDashboard').slideToggle();
+                });
+                $('#btnOpenSettings').prop('disabled', true);
+            });
+
+            // Function to close settings dashboard
+            $('#btnCloseSettings').on('click', function () {
+                $('#settingsDashboard').slideToggle(function() {
+                    $('#divDashboard').slideToggle();
+                });
+                $('#btnOpenSettings').prop('disabled', false);
+            });
+
+            // Function to handle dark mode toggle
+            $('#darkModeToggle').on('change', function () {
+                let darkModeEnabled = $(this).prop('checked');
+                if (darkModeEnabled) {
+                    setColorMode('dark');
+                    $('html').attr('data-bs-theme', 'dark');
+                } else {
+                    setColorMode('light');
+                    $('html').attr('data-bs-theme', 'light');
                 }
             });
-        });
 
-        // Switch to observations graph view
-        $('#btnObservationsGraph').on('click', function () {
-            console.log("Swapping to Observations Graph");
-            updateSession();
-            $('#divObservationsGraph').show();
-            $('#divObservationsTable').hide();
-            $('#btnObservationsGraph').hide();
-            $('#btnObservationsTable').show();
-        });
-
-        // Switch to observations table view
-        $('#btnObservationsTable').on('click', function () {
-            console.log("Swapping to Observations Table");
-            updateSession();
-            $('#divObservationsTable').show();
-            $('#divObservationsGraph').hide();
-            $('#btnObservationsTable').hide();
-            $('#btnObservationsGraph').show();
-        });
-
-        // Log eggs
-        $('#btnEggs').on('click', function () {
-            updateSession();
-            let intEggs = $('#numEggs').val();
-            let dtCurrentDate = new Date();
-            $.ajax({
-                type: 'POST',
-                url: "http://www.simplecoop.swollenhippo.com/eggs.php",
-                data: {
-                    SessionID: sessionStorage.getItem('SessionID'),
-                    eggs: intEggs,
-                    observationDateTime: toLocalISOString(dtCurrentDate)
-                },
-                error: function (e) {
-                    console.log(e);
-                },
-                success: function (result) {
-                    result = JSON.parse(result);
-                    console.log(result);
-
-                    strCurrentDate = formatDate(dtCurrentDate);
-                    tblEggs.row.add([
-                        strCurrentDate,
-                        intEggs
-                    ]).draw();
-
-                    grfEggs.data.labels.push(strCurrentDate.slice(0, 10));
-                    grfEggs.data.datasets[0].data.push(intEggs);
-                    grfEggs.update();
+            // Door Functionality
+            $('#door-toggle').on('change', function() {
+                let doorState;
+                if ($(this).prop('checked')) {
+                    doorState = "Open";
+                } else {
+                    doorState = "Closed";
                 }
+
+                updateSettings(sessionStorage.getItem('SessionID'), 'door_status', doorState, 'PUT');
+                $("#doorStatusText").text(doorState); // Assuming you have an element with id "doorStatusText"
             });
-        });
 
-        // Switch to eggs graph view
-        $('#btnEggsGraph').on('click', function () {
-            console.log("Swapping to Eggs Graph");
-            updateSession();
-            $('#divEggsGraph').show();
-            $('#divEggsTable').hide();
-            $('#btnEggsGraph').hide();
-            $('#btnEggsTable').show();
-        });
+            // Function to handle fan toggle
+            $('#fanToggle').on('change', function () {
+                let fanEnabled = $(this).prop('checked');
+                console.log('Fan: ' + fanEnabled.toString());
+                updateSettings(
+                    sessionStorage.getItem('SessionID'),
+                    'fanEnabled',
+                    fanEnabled.toString(),
+                    'PUT'
+                );
+            });
 
-        // Switch to eggs table view
-        $('#btnEggsTable').on('click', function () {
-            console.log("Swapping to Eggs Table");
-            updateSession();
-            $('#divEggsTable').show();
-            $('#divEggsGraph').hide();
-            $('#btnEggsTable').hide();
-            $('#btnEggsGraph').show();
-        });
+            // Event listener for fan speed range input
+            document.getElementById("fanSpeedRange").addEventListener("input", function() {
+                document.getElementById("fanSpeedValue").textContent = this.value;
+                var fanToggle = document.getElementById("fanToggle");
 
-        $('#btnOpenSettings').on('click', function () {
-        $('#settingsDashboard').show();
-        $('#divDashboard').hide();
-
-    });
-
-    // Function to open settings dashboard
-    $('#btnOpenSettings').on('click', function () {
-        $('#settingsDashboard').show();
-        $('#divDashboard').hide();
-    });
-
-    // Function to close settings dashboard
-    $('#btnCloseSettings').on('click', function () {
-        $('#settingsDashboard').hide();
-        $('#divDashboard').show();
-    });
-
-    // Function to handle dark mode toggle
-    $('#darkModeToggle').on('change', function () {
-        let darkModeEnabled = $(this).prop('checked');
-        if (darkModeEnabled) {
-            enableDarkMode();
-        } else {
-            disableDarkMode();
-        }
-    });
-
-    // Function to enable dark mode
-    function enableDarkMode() {
-        $('html').attr('data-bs-theme', 'dark');
-        // Check if dark mode setting exists
-        $.ajax({
-            type: 'GET',
-            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-            data: {
-                SessionID: sessionStorage.getItem('SessionID'),
-                setting: 'darkModeEnabled'
-            },
-            success: function (result) {
-                if (result.length > 0) {
-                    // Dark mode setting exists, update it
+                if (parseInt(this.value) > 0) {
+                    fanToggle.checked = true;
                     updateSettings(
                         sessionStorage.getItem('SessionID'),
-                        'darkModeEnabled',
+                        'fanSpeed',
+                        this.value,
+                        'PUT'
+                    );
+                } else {
+                    fanToggle.checked = false;
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'fanSpeed',
+                        '0',
+                        'PUT'
+                    );
+                }
+            });
+
+            // Function to handle light toggle
+            $('#lightToggle').on('change', function () {
+                let lightEnabled = $(this).prop('checked');
+                if (lightEnabled) {
+                    console.log('Lights turned on');
+                    updateSettings(
+                        sessionStorage.getItem('SessionID'),
+                        'lightEnabled',
                         'true',
                         'PUT'
                     );
                 } else {
-                    // Dark mode setting doesn't exist, create it
+                    console.log('Lights turned off');
                     updateSettings(
                         sessionStorage.getItem('SessionID'),
-                        'darkModeEnabled',
-                        'true',
-                        'POST'
+                        'lightEnabled',
+                        'false',
+                        'PUT'
                     );
                 }
-            }
-        });
-    }
+            });
 
-    // Function to disable dark mode
-    function disableDarkMode() {
-        $('html').attr('data-bs-theme', 'light');
-        $.ajax({
-            type: 'GET',
-            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-            data: {
-                SessionID: sessionStorage.getItem('SessionID'),
-                setting: 'darkModeEnabled'
-            },
-            success: function (result) {
-                if (result.length > 0) {
+            // Event listener for heat level range input
+            document.getElementById("heatLevelRange").addEventListener("input", function() {
+                document.getElementById("heatLevelValue").textContent = this.value;
+                const heatToggle = document.getElementById('heatToggle');
+                if (heatLevelValue > heatLevelRangeValue) {
+                    heatToggle.checked = false;
+                    console.log('Heat turned off');
                     updateSettings(
                         sessionStorage.getItem('SessionID'),
-                        'darkModeEnabled',
+                        'heatEnabled',
                         'false',
                         'PUT'
                     );
                 } else {
+                    heatToggle.checked = true;
+                    console.log('Heat turned on');
                     updateSettings(
                         sessionStorage.getItem('SessionID'),
-                        'darkModeEnabled',
-                        'false',
-                        'POST'
+                        'heatEnabled',
+                        'true',
+                        'PUT'
                     );
                 }
-            }
+            });
+
+            //////////////////////////////////////////////////////////////
+            //////////////////////////////////////////////////////////////
         });
-    }
-
-    // Function to handle fan toggle
-    $('#fanToggle').on('change', function () {
-        let fanEnabled = $(this).prop('checked');
-        if (fanEnabled) {
-            console.log('Fan turned on');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'true',
-                'PUT'
-            );
-        } else {
-            console.log('Fan turned off');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'false',
-                'PUT'
-            );
-        }
-    });
-
-    // Event listener for input on heat level range
-    $('#heatLevelRange').on('input', function () {
-        heatLevelValue = parseFloat($(this).val());
-        updateHeatControl();
-    });
-
-    // Function to handle heat toggle
-    function updateHeatControl() {
-        const heatToggle = document.getElementById('heatToggle');
-        if (heatLevelValue > heatLevelRangeValue) {
-            heatToggle.checked = false;
-            console.log('Heat turned off');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'heatEnabled',
-                'false',
-                'PUT'
-            );
-        } else {
-            heatToggle.checked = true;
-            console.log('Heat turned on');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'heatEnabled',
-                'true',
-                'PUT'
-            );
-        }
-    }
-
-    // Function to handle light toggle
-    $('#lightToggle').on('change', function () {
-        let lightEnabled = $(this).prop('checked');
-        if (lightEnabled) {
-            console.log('Lights turned on');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'lightEnabled',
-                'true',
-                'PUT'
-            );
-        } else {
-            console.log('Lights turned off');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'lightEnabled',
-                'false',
-                'PUT'
-            );
-        }
-    });
-
-    // Event listener for fan speed range input
-    document.getElementById("fanSpeedRange").addEventListener("input", function() {
-        document.getElementById("fanSpeedValue").textContent = this.value;
-        var fanToggle = document.getElementById("fanToggle");
-
-        if (parseInt(this.value) > 0) {
-            fanToggle.checked = true;
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanSpeed',
-                this.value,
-                'PUT'
-            );
-        } else {
-            fanToggle.checked = false;
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanSpeed',
-                '0',
-                'PUT'
-            );
-        }
-    });
-
-    // Event listener for fan toggle checkbox
-    document.getElementById("fanToggle").addEventListener("change", function() {
-        var fanSpeedRange = document.getElementById("fanSpeedRange");
-        if (!this.checked) {
-            fanSpeedRange.value = 0;
-            document.getElementById("fanSpeedValue").textContent = 0;
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'false',
-                'PUT'
-            );
-        } else {
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'true',
-                'PUT'
-            );
-        }
-    });
-
-    // Event listener for heat level range input
-    document.getElementById("heatLevelRange").addEventListener("input", function() {
-        document.getElementById("heatLevelValue").textContent = this.value;
-        updateHeatControl();
-    });
-
-    // Event listener for decreasing fan speed
-    $('#btnDecreaseFanSpeed').on('click', function () {
-        if (fanSpeed > 0) {
-            fanSpeed--;
-            updateFanSpeedDisplay();
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanSpeed',
-                fanSpeed.toString(),
-                'PUT'
-            );
-        }
-
-    });
-
-    // Event listener for increasing fan speed
-    $('#btnIncreaseFanSpeed').on('click', function () {
-        if (fanSpeed < 3) {
-            fanSpeed++;
-            updateFanSpeedDisplay();
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanSpeed',
-                fanSpeed.toString(),
-                'PUT'
-            );
-        }
-    });
-
-    // Event listener for fan toggle
-    $('#btnFanToggle').on('click', function () {
-        let fanState = $(this).text();
-        if (fanState === 'Turn On') {
-            $(this).text('Turn Off');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'true',
-                'PUT'
-            );
-        } else {
-            $(this).text('Turn On');
-            updateSettings(
-                sessionStorage.getItem('SessionID'),
-                'fanEnabled',
-                'false',
-                'PUT'
-            );
-        }
-    });
-
-    // Function to update settings
-    function updateSettings(sessionID, setting, value, method) {
-        $.ajax({
-            type: method,
-            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-            data: {
-                SessionID: sessionStorage.getItem('SessionID'),
-                setting: setting,
-                value: value
-            },
-            error: function (e) {
-                console.log(e);
-            },
-            success: function (result) {
-                result = JSON.parse(result);
-                console.log(result);
-            }
-        });
-    }
-
-    // Updates the state of the door
-    function updateDoorStatusDisplay(doorState) {
-        $("#doorStatusText").text(doorState); // Assuming you have an element with id "doorStatusText"
-    };
-
-    // Door Functionality
-    $('#door-toggle').on('change', function() {
-        let doorState;
-        if ($(this).prop('checked')) {
-            doorState = "Open";
-        } else {
-            doorState = "Closed";
-        }
-
-        updateSettings(sessionStorage.getItem('SessionID'), 'door_status', doorState, 'PUT');
-        updateDoorStatusDisplay(doorState);
-    });
-
-    // Function to update settings
-    function updateSettings(sessionID, setting, value, method) {
-        $.ajax({
-            type: method,
-            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-            data: {
-                SessionID: sessionStorage.getItem('SessionID'),
-                setting: setting,
-                value: value
-            },
-            error: function (e) {
-                console.log(e);
-            },
-            success: function (result) {
-                result = JSON.parse(result);
-                console.log(result);
-            }
-        });
-    }
     </script>
 </body>
 
