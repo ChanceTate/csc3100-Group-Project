@@ -486,11 +486,13 @@
                                     $('#txtHigh').text(Math.round(result.daily[0].temp.max) + "°F");
                                     $('#txtLow').text(Math.round(result.daily[0].temp.min) + "°F");
 
-                                    // Set the current temperature as the default value for the range input
-                                    heatLevelRangeValue = Math.round(result.current.temp);
-                                    $('#heatLevelRange').val(Math.round(result.current.temp));
-                                    // Set the initial display value in the span element
-                                    $('#heatLevelValue').text(Math.round(result.current.temp));
+                                    if (!localStorage.getItem('heatValue')) {
+                                        // Set the current temperature as the default value for the range input
+                                        heatLevelRangeValue = Math.round(result.current.temp);
+                                        $('#heatLevelRange').val(Math.round(result.current.temp));
+                                        // Set the initial display value in the span element
+                                        $('#heatLevelValue').text(Math.round(result.current.temp));
+                                    }
                                 }
                             });
                         }
@@ -946,30 +948,44 @@
             
             // Check if there is a session ID in session storage, and if so, validate or discard it, otherwise show the login screen
             if (sessionStorage.getItem("SessionID")) {
-                $.getJSON("http://www.simplecoop.swollenhippo.com/sessions.php", { SessionID: sessionStorage.getItem("SessionID") }, function (result) {
-                    if (result.SessionID != sessionStorage.getItem("SessionID")) {
-                        sessionStorage.removeItem("SessionID");
-                    }
-
-                    let strEmail = result.Email;
-
-                    if (!strEmail) {
-                        console.log("Could not find user email from session ID");
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://www.simplecoop.swollenhippo.com/sessions.php',
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID')
+                    },
+                    error: function(e) {
+                        console.log(e);
                         logOutToggle();
-                        return;
-                    }
+                    },
+                    success: function(result) {
+                        result = JSON.parse(result);
+                    
+                        if (result.SessionID != sessionStorage.getItem("SessionID")) {
+                            sessionStorage.removeItem("SessionID");
+                            console.log("Invalid session ID, displaying login.");
+                            logOutToggle();
+                        }
 
-                    if (sessionStorage.getItem("SessionID")) {
-                        updateSession();
-                        getWeather(strEmail);
-                        getSettings();
-                        getEggs();
-                        getEnvironmentObservations();
+                        let strEmail = result.Email;
+                        if (!strEmail) {
+                            console.log("Could not find user email from session ID");
+                            logOutToggle();
+                            return;
+                        }
 
-                        logInToggle();
-                    } else {
-                        console.log("Invalid SessionID. Displaying Login")
-                        logOutToggle();
+                        if (sessionStorage.getItem("SessionID")) {
+                            updateSession();
+                            getSettings();
+                            getWeather(strEmail);
+                            getEggs();
+                            getEnvironmentObservations();
+
+                            logInToggle();
+                        } else {
+                            console.log("Invalid SessionID. Displaying Login")
+                            logOutToggle();
+                        }
                     }
                 });
             } else {
@@ -1224,7 +1240,10 @@
                 }
             });
 
+            // Preemptively add on-click functionaity to the "confirm delete account" button,
+            // which displays in a Sweet Alert, and thus does not exist yet
             $('body').on('click', '#btnConfirmDeleteAccount', function() {
+                // Check session ID validity and get email from it
                 $.ajax({
                     type: 'GET',
                     url: 'http://www.simplecoop.swollenhippo.com/sessions.php',
@@ -1237,6 +1256,7 @@
                     success: function(result) {
                         result = JSON.parse(result);
                         let strEmail = result.Email;
+                        // Session ID good and email obtained, attempt to delete user
                         $.ajax({
                             type: 'DELETE',
                             url: 'http://www.simplecoop.swollenhippo.com/users.php',
@@ -1248,8 +1268,9 @@
                             },
                             success: function(result) {
                                 console.log(result);
-
+                
                                 result = JSON.parse(result);
+                                // Error case sweet alert
                                 if (result.Outcome != "User Deleted") {
                                     Swal.fire({
                                         icon: 'warning',
@@ -1260,6 +1281,7 @@
                                     return;
                                 }
 
+                                // Attempt to delete user address info as well, but not critical failure if this doesn't succeed
                                 $.ajax({
                                     type: 'DELETE',
                                     url: 'http://www.simplecoop.swollenhippo.com/useraddress.php',
@@ -1274,6 +1296,7 @@
                                     }
                                 })
 
+                                // Close swal, delete user settings, log out
                                 Swal.close();
                                 deleteSetting('colormode');
                                 deleteSetting('doorStatus');
@@ -1289,6 +1312,7 @@
                 });
             });
 
+            // Display a sweet alert with the above confirmation button when clicked
             $('#btnDeleteAccount').on('click', function() {
                 Swal.fire({
                     icon: 'warning',
@@ -1495,12 +1519,15 @@
 
                 if (parseInt(this.value) > 0) {
                     fanToggle.checked = true;
-                    updateSetting('fanSpeed', this.value);
                 } else {
                     fanToggle.checked = false;
-                    updateSetting('fanSpeed', '0');
-                    updateSetting('fanEnabled', 'false');
                 }
+            })
+
+            // Only update database on mouse/touch RELEASE, so as to not spam requests
+            $('#fanSpeedRange').on('mouseup touchend', function() {
+                updateSetting('fanSpeed', $('#fanSpeedRange').val());
+                updateSetting('fanEnabled', $('#fanToggle').val().toString());
             })
 
             // Function to handle light toggle
@@ -1512,7 +1539,6 @@
 
             $('#heatToggle').on('change', function () {
                 let heatEnabled = $(this).prop('checked');
-                console.log('Heat: ' + heatEnabled.toString());
                 updateSetting('heatEnabled', heatEnabled.toString());
             });
 
@@ -1523,15 +1549,15 @@
 
                 if (parseInt($('#heatLevelRange').val()) <= 50) {
                     heatToggle.checked = false;
-                    console.log('Heat turned off');
-                    updateSetting('heatValue', '50')
-                    updateSetting('heatEnabled', 'false');
                 } else {
                     heatToggle.checked = true;
-                    console.log('Heat turned on');
-                    updateSetting('heatValue', $('#heatLevelRange').val());
-                    updateSetting('heatEnabled', 'true');
                 }
+            })
+
+            // Only update database on mouse/touch RELEASE, so as to not spam requests
+            $('#heatLevelRange').on('mouseup touchend', function() {
+                updateSetting('heatValue', $('#heatLevelRange').val());
+                updateSetting('heatEnabled', $('#heatToggle').prop('checked').toString());
             })
 
             //////////////////////////////////////////////////////////////
