@@ -23,7 +23,6 @@
         <div class="container-fluid">
             <a class="navbar-brand text-light">SwollenHippo Smart Coop</a>
         </div>
-        <button id="btnLogout" class="btn btn-info" style="display:none;">Logout</button>
         <button id="btnOpenSettings" class="btn btn-primary" style="display:none;">Settings</button>
     </nav>
     <!-- Main Content -->
@@ -87,7 +86,7 @@
                             </div>
                             <div class="form-group mt-2">
                                 <label for="txtCoopID" class="form-label">Coop Registration ID</label>
-                                <input id="txtCoopID" class="form-control" type="text" placeholder="1234">
+                                <input id="txtCoopID" class="form-control" type="text" placeholder="1234ABCD">
                             </div>
                         </div>
                         <div class="col-10 col-md-5">
@@ -153,7 +152,7 @@
                     <div class="card-body">
                         <h5 class="card-title">Mode Control</h5>
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 d-flex align-items-center justify-content-start">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="darkModeToggle" checked>
                                     <label class="form-check-label" for="darkModeToggle">
@@ -162,7 +161,30 @@
                                 </div>
                             </div>
                             <div class="col-md-6 d-flex align-items-center justify-content-end">
-                                <div class="form-check form-switch">
+                                <button id="btnLogout" class="btn btn-info mx-2">Logout</button>
+                                <button id="btnDeleteAccount" class="btn btn-danger mx-2">Delete Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Doors and Lights Control -->
+                <div class="card border-primary col-12 mb-4">
+                    <div class="card-body col-12 d-flex flex-column flex-md-row align-items-center justify-content-evenly">
+                        <!-- Doors -->
+                        <div class="card col-12 col-md-5 my-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Door Control</h5>
+                                <div class="form-check form-switch mt-2">
+                                    <input class="form-check-input" type="checkbox" id="door-toggle">
+                                    <label class="form-check-label" for="door-toggle">Door</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Lights -->
+                        <div class="card col-12 col-md-5 my-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Lights Control</h5>
+                                <div class="form-check form-switch mt-2">
                                     <label class="form-check-label mr-3" for="lightToggle">
                                         Lights
                                     </label>
@@ -172,65 +194,39 @@
                         </div>
                     </div>
                 </div>
-                <!-- Door Control-->
+                <!-- Fan and Heat Control -->
                 <div class="card border-primary col-12">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Door Control</h5>
-                                        <div class="form-check form-switch mt-2">
-                                            <h6>Door Status</h6>
-                                            <input class="form-check-input" type="checkbox" id="door-toggle">
-                                            <label class="form-check-label" for="door-toggle">Door</label>
-                                        </div>
-                                        <span id="doorStatusText">Closed</span>
+                    <div class="card-body col-12 d-flex flex-column flex-md-row align-items-center justify-content-evenly">
+                        <!-- Fan Control -->
+                        <div class="card col-12 col-md-5 my-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Fan Control</h5>
+                                <div>
+                                    <h6>Fan Speed</h6>
+                                    <input type="range" class="form-range" id="fanSpeedRange" min="0" max="3" value="0">
+                                    <span id="fanSpeedValue">0</span>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="fanToggle">
+                                        <label class="form-check-label" for="fanToggle" checked>
+                                            Fan
+                                        </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <!-- Fan and Heat Control -->
-                <div class="card border-primary col-12">
-                    <div class="card-body">
-                        <div class="row">
-                            <!-- Fan Control -->
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Fan Control</h5>
-                                        <div>
-                                            <h6>Fan Speed</h6>
-                                            <input type="range" class="form-range" id="fanSpeedRange" min="0" max="3" value="0">
-                                            <span id="fanSpeedValue">0</span>
-                                            <div class="form-check form-switch mt-2">
-                                                <input class="form-check-input" type="checkbox" id="fanToggle">
-                                                <label class="form-check-label" for="fanToggle" checked>
-                                                    Fan
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Heat Control -->
-                            <div class="col-md-6">
-                                <div class="card">
-                                    <div class="card-body text-center">
-                                        <h5 class="card-title">Heat Control</h5>
-                                        <div>
-                                            <h6>Heat Level</h6>
-                                            <input type="range" class="form-range" id="heatLevelRange" min="50" max="90">
-                                            <span id="heatLevelValue"></span>
-                                            <div class="form-check form-switch mt-2">
-                                                <input class="form-check-input" type="checkbox" id="heatToggle">
-                                                <label class="form-check-label" for="heatToggle" checked>
-                                                    Heat
-                                                </label>
-                                            </div>
-                                        </div>
+                        <!-- Heat Control -->
+                        <div class="card col-12 col-md-5 my-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Heat Control</h5>
+                                <div>
+                                    <h6>Heat Level</h6>
+                                    <input type="range" class="form-range" id="heatLevelRange" min="50" max="90">
+                                    <span id="heatLevelValue"></span>
+                                    <div class="form-check form-switch mt-2">
+                                        <input class="form-check-input" type="checkbox" id="heatToggle">
+                                        <label class="form-check-label" for="heatToggle" checked>
+                                            Heat
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -326,9 +322,9 @@
                     <div class="card-body">
                         <div class="d-flex flex-sm-row flex-column justify-content-between align-items-center mb-3">
                             <div class="input-group col justify-content-sm-start justify-content-center mb-sm-0 mb-3">
-                                <input class="rounded-start col-4" id="numEggs" type="number"
+                                <input class="rounded col-4" id="numEggs" type="number"
                                     aria-label="Number of eggs to log">
-                                <button type="button" id="btnEggs" class="btn btn-primary">Log Eggs</button>
+                                <button type="button" id="btnEggs" class="btn btn-primary mx-2">Log Eggs</button>
                             </div>
                             <button type="button" id="btnEggsGraph" class="btn btn-primary">View Graph</button>
                             <button type="button" id="btnEggsTable" class="btn btn-primary" style="display: none">View
@@ -380,40 +376,6 @@
         let grfEggs;
         let fanSpeed = 0;
         let heatLevelRangeValue;
-
-        // For Testing Purposes
-        // deleteUser('');
-        function deleteUser(strEmail) {
-            $.ajax({
-                type: 'DELETE',
-                url: "http://www.simplecoop.swollenhippo.com/users.php",
-                data: {
-                    Email: strEmail
-                },
-                error: function (e) {
-                    console.log(e);
-                },
-                success: function (result) {
-                    result = JSON.parse(result);
-                    console.log(result);
-
-                    $.ajax({
-                        type: 'DELETE',
-                        url: "http://www.simplecoop.swollenhippo.com/useraddress.php",
-                        data: {
-                            Email: strEmail
-                        },
-                        error: function (e) {
-                            console.log(e);
-                        },
-                        success: function (result) {
-                            result = JSON.parse(result);
-                            console.log(result);
-                        }
-                    })
-                }
-            });
-        }
 
         // For Testing Purposes
         // deleteObservation('');
@@ -498,7 +460,7 @@
                 },
                 success: function (result) {
                     result = JSON.parse(result);
-                    console.log("User Address", result);
+
                     $('#txtLocation').text(result.City);
 
                     $.ajax({
@@ -546,24 +508,69 @@
         ///////////////////////////////////////
 
         // Function to update settings
-        function updateSettings(sessionID, setting, value, method) {
+        function updateSetting(settingName, newValue) {
+            let sessionID = sessionStorage.getItem('SessionID');
+            if (!sessionID) {
+                console.log("Setting " + setting + " could not be updated.");
+                return;
+            }
+
             $.ajax({
-                type: method,
-                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                type: 'DELETE',
+                url: 'http://www.simplecoop.swollenhippo.com/settings.php',
                 data: {
-                    SessionID: sessionStorage.getItem('SessionID'),
-                    setting: setting,
-                    value: value
+                    SessionID: sessionID,
+                    setting: settingName
                 },
-                error: function (e) {
+                error: function(e) {
                     console.log(e);
                 },
-                success: function (result) {
+                success: function(result) {
                     result = JSON.parse(result);
+                    console.log(result);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                        data: {
+                            SessionID: sessionID,
+                            setting: settingName,
+                            value: newValue
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        },
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            console.log(result);
+                            localStorage.setItem(settingName, newValue);
+                        }
+                    });
+                }
+            })
+        }
+
+        function deleteSetting(settingName) {
+            let sessionID = sessionStorage.getItem('SessionID');
+            if (!sessionID) {
+                return;
+            }
+
+            $.ajax({
+                type: 'DELETE',
+                url: 'http://www.simplecoop.swollenhippo.com/settings.php',
+                data: {
+                    SessionID: sessionID,
+                    setting: settingName
+                },
+                error: function(e) {
+                    console.log(e);
+                },
+                success: function(result) {
                     console.log(result);
                 }
             });
-        }
+        } 
 
         // Gets colormode from the database and changes the theme accordingly
         function getSettings() {
@@ -572,11 +579,14 @@
                 return;
             }
 
+            let sessionID = sessionStorage.getItem('SessionID');
+
+            //  This would all be great to functionize, to reduce the amount of repeating code here, but the async nature of ajax calls make that a problem.
             $.ajax({
                 type: 'GET',
                 url: "http://www.simplecoop.swollenhippo.com/settings.php",
                 data: {
-                    SessionID: sessionStorage.getItem("SessionID"),
+                    SessionID: sessionID,
                     setting: 'colormode'
                 },
                 error: function (e) {
@@ -584,11 +594,10 @@
                 },
                 success: function (result) {
                     result = JSON.parse(result);
-                    console.log("ColorMode", result);
 
                     if (result != null) {
-                        let strMode = result.Value;
-                        if (strMode == 'dark') {
+                        let colorMode = result.Value;
+                        if (colorMode == 'dark') {
                             $('html').attr('data-bs-theme', 'dark');
                             $('#darkModeToggle').prop('checked', true);
                             localStorage.setItem('colormode', 'dark');
@@ -600,87 +609,186 @@
                     }
                 }
             });
-        }
 
-        // Updates color mode in the database
-        function setColorMode(strMode) {
-            if (strMode != 'light' && strMode != 'dark') {
-                console.log("Invalid color mode string");
-                return;
-            }
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'doorStatus'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
 
-            if (sessionStorage.getItem('SessionID')) {
-                $.ajax({
-                    type: 'DELETE',
-                    url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                    data: {
-                        SessionID: sessionStorage.getItem('SessionID'),
-                        setting: 'colormode'
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    },
-                    success: function (result) {
-                        result = JSON.parse(result);
-                        console.log(result);
-
-                        $.ajax({
-                            type: 'POST',
-                            url: "http://www.simplecoop.swollenhippo.com/settings.php",
-                            data: {
-                                SessionID: sessionStorage.getItem('SessionID'),
-                                setting: "colormode",
-                                value: strMode
-                            },
-                            error: function (e) {
-                                console.log(e);
-                            },
-                            success: function (result) {
-                                result = JSON.parse(result);
-                                console.log(result);
-
-                                localStorage.setItem('colormode', strMode);
-                            }
-                        });
+                    if (result != null) {
+                        let doorState = result.Value
+                        if (doorState == "Open") {
+                            $('#door-toggle').prop('checked', true);
+                        } else {
+                            $('#door-toggle').prop('checked', false);
+                        }
                     }
-                });
-            } else {
-                localStorage.setItem('colormode', strMode);
-            }
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'lightEnabled'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let lightState = result.Value;
+                        if (lightState == 'true') {
+                            $('#lightToggle').prop('checked', true);
+                        } else {
+                            $('#lightToggle').prop('checked', false);
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'fanEnabled'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let fanState = result.Value;
+                        if (fanState == 'true') {
+                            $('#fanToggle').prop('checked', true);
+                        } else {
+                            $('#fanToggle').prop('checked', false);
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'fanSpeed'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let fanSpeed = result.Value;
+                        if (fanSpeed) {
+                            $('#fanSpeedRange').val(fanSpeed);
+                            $('#fanSpeedValue').text(fanSpeed);
+                        } else {
+                            $('#fanSpeedRange').val(0);
+                            $('#fanSpeedValue').text("0");
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'heatEnabled'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let heatState = result.Value;
+                        if (heatState == 'true') {
+                            $('#heatToggle').prop('checked', true);
+                        } else {
+                            $('#heatToggle').prop('checked', false);
+                        }
+                    }
+                }
+            });
+
+            $.ajax({
+                type: 'GET',
+                url: "http://www.simplecoop.swollenhippo.com/settings.php",
+                data: {
+                    SessionID: sessionID,
+                    setting: 'heatValue'
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                success: function (result) {
+                    result = JSON.parse(result);
+
+                    if (result != null) {
+                        let heatValue = result.Value;
+                        if (heatValue) {
+                            $('#heatLevelRange').val(heatValue);
+                            $('#heatLevelValue').text(heatValue);
+                        }
+                    }
+                }
+            });
         }
 
         function logInToggle() {
+            $('#btnOpenSettings').prop('disabled', false);
+            $('#btnOpenSettings').show();
+
             if ($('#divLogin').is(':visible')) {
                 $('#divLogin').slideToggle(function () {
-                    $('#btnLogout').show();
-                    $('#btnOpenSettings').show();
                     $('#divDashboard').slideToggle();
                 });
             } else if ($('#divRegister').is(':visible')) {
                 $('#divRegister').slideToggle(function () {
-                    $('#btnLogout').show();
-                    $('#btnOpenSettings').show();
                     $('#divDashboard').slideToggle();
                 });
             } else {
-                $('#btnLogout').show();
-                $('#btnOpenSettings').show();
                 $('#divDashboard').slideToggle();
             }
         }
 
         function logOutToggle() {
+            $('#btnOpenSettings').hide();
+
             if ($('#divDashboard').is(':visible')) {
                 $('#divDashboard').slideUp(function () {
-                    $('#btnLogout').hide();
-                    $('#btnOpenSettings').hide();
                     $('#divLogin').slideDown();
                 })
+            } else if ($('#settingsDashboard').is(':visible')) {
+                $('#settingsDashboard').slideToggle(function () {
+                    $('#divLogin').slideDown()
+                });
             } else {
-                $('#btnLogout').hide();
-                $('#btnOpenSettings').hide();
-                $('#divLogin').slideDown();
+                $('#divLogin').slideDown()
             }
+
+            sessionStorage.removeItem('SessionID');
         }
 
         ///////////////////////////////////////
@@ -704,7 +812,6 @@
                 },
                 success: function (result) {
                     result = JSON.parse(result);
-                    console.log("Environment Observations", result);
 
                     let arrObservationDates = [];
                     let arrTemperatures = [];
@@ -779,7 +886,6 @@
                 },
                 success: function (result) {
                     result = JSON.parse(result);
-                    console.log("Egg Logs", result);
 
                     let arrLogDates = [];
                     let arrEggCounts = [];
@@ -1106,7 +1212,7 @@
                             $('#txtCoopID').val('');
 
                             sessionStorage.setItem("SessionID", result.SessionID);
-                            setColorMode($('html').attr('data-bs-theme'));
+                            updateSetting('colormode', $('html').attr('data-bs-theme'));
 
                             getWeather(strEmail);
                             getEggs();
@@ -1116,6 +1222,81 @@
                         })
                     })
                 }
+            });
+
+            $('body').on('click', '#btnConfirmDeleteAccount', function() {
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://www.simplecoop.swollenhippo.com/sessions.php',
+                    data: {
+                        SessionID: sessionStorage.getItem('SessionID')
+                    },
+                    error: function(e) {
+                        console.log(e);
+                    },
+                    success: function(result) {
+                        result = JSON.parse(result);
+                        let strEmail = result.Email;
+                        $.ajax({
+                            type: 'DELETE',
+                            url: 'http://www.simplecoop.swollenhippo.com/users.php',
+                            data: {
+                                Email: strEmail
+                            },
+                            error: function(e) {
+                                console.log(e);
+                            },
+                            success: function(result) {
+                                console.log(result);
+
+                                result = JSON.parse(result);
+                                if (result.Outcome != "User Deleted") {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Oops!',
+                                        text: 'Your account could not be deleted, please try again in a moment.'
+                                    });
+
+                                    return;
+                                }
+
+                                $.ajax({
+                                    type: 'DELETE',
+                                    url: 'http://www.simplecoop.swollenhippo.com/useraddress.php',
+                                    data: {
+                                        Email: strEmail
+                                    },
+                                    error: function(e) {
+                                        console.log(e);
+                                    },
+                                    success: function(result) {
+                                        console.log(result);
+                                    }
+                                })
+
+                                Swal.close();
+                                deleteSetting('colormode');
+                                deleteSetting('doorStatus');
+                                deleteSetting('lightEnabled');
+                                deleteSetting('fanEnabled');
+                                deleteSetting('fanSpeed');
+                                deleteSetting('heatEnabled');
+                                deleteSetting('heatValue');
+                                logOutToggle();
+                            }
+                        });
+                    }
+                });
+            });
+
+            $('#btnDeleteAccount').on('click', function() {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Are you sure?',
+                    showCancelButton: true,
+                    showConfirmButton: false,
+                    html: `<button id="btnConfirmDeleteAccount" class="swal2-confirm swal2-styled mt-4">Yes</button>`
+                })
             });
 
             //////////////////////////////////////////////////////////////
@@ -1280,10 +1461,10 @@
             $('#darkModeToggle').on('change', function () {
                 let darkModeEnabled = $(this).prop('checked');
                 if (darkModeEnabled) {
-                    setColorMode('dark');
+                    updateSetting('colormode', 'dark');
                     $('html').attr('data-bs-theme', 'dark');
                 } else {
-                    setColorMode('light');
+                    updateSetting('colormode', 'light');
                     $('html').attr('data-bs-theme', 'light');
                 }
             });
@@ -1297,92 +1478,61 @@
                     doorState = "Closed";
                 }
 
-                updateSettings(sessionStorage.getItem('SessionID'), 'door_status', doorState, 'PUT');
-                $("#doorStatusText").text(doorState); // Assuming you have an element with id "doorStatusText"
+                updateSetting('doorStatus', doorState);
             });
 
             // Function to handle fan toggle
             $('#fanToggle').on('change', function () {
                 let fanEnabled = $(this).prop('checked');
                 console.log('Fan: ' + fanEnabled.toString());
-                updateSettings(
-                    sessionStorage.getItem('SessionID'),
-                    'fanEnabled',
-                    fanEnabled.toString(),
-                    'PUT'
-                );
+                updateSetting('fanEnabled', fanEnabled.toString());
             });
 
             // Event listener for fan speed range input
-            document.getElementById("fanSpeedRange").addEventListener("input", function() {
+            $('#fanSpeedRange').on('input', function() {
                 document.getElementById("fanSpeedValue").textContent = this.value;
                 var fanToggle = document.getElementById("fanToggle");
 
                 if (parseInt(this.value) > 0) {
                     fanToggle.checked = true;
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'fanSpeed',
-                        this.value,
-                        'PUT'
-                    );
+                    updateSetting('fanSpeed', this.value);
                 } else {
                     fanToggle.checked = false;
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'fanSpeed',
-                        '0',
-                        'PUT'
-                    );
+                    updateSetting('fanSpeed', '0');
+                    updateSetting('fanEnabled', 'false');
                 }
-            });
+            })
 
             // Function to handle light toggle
             $('#lightToggle').on('change', function () {
                 let lightEnabled = $(this).prop('checked');
-                if (lightEnabled) {
-                    console.log('Lights turned on');
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'lightEnabled',
-                        'true',
-                        'PUT'
-                    );
-                } else {
-                    console.log('Lights turned off');
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'lightEnabled',
-                        'false',
-                        'PUT'
-                    );
-                }
+                console.log('Lights: ' + lightEnabled.toString());
+                updateSetting('lightEnabled', lightEnabled.toString());
             });
 
-            // Event listener for heat level range input
-            document.getElementById("heatLevelRange").addEventListener("input", function() {
-                document.getElementById("heatLevelValue").textContent = this.value;
+            $('#heatToggle').on('change', function () {
+                let heatEnabled = $(this).prop('checked');
+                console.log('Heat: ' + heatEnabled.toString());
+                updateSetting('heatEnabled', heatEnabled.toString());
+            });
+
+            $('#heatLevelRange').on('input', function() {
+                $('#heatLevelValue').text($('#heatLevelRange').val());
+
                 const heatToggle = document.getElementById('heatToggle');
-                if (heatLevelValue > heatLevelRangeValue) {
+
+                if (parseInt($('#heatLevelRange').val()) <= 50) {
                     heatToggle.checked = false;
                     console.log('Heat turned off');
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'heatEnabled',
-                        'false',
-                        'PUT'
-                    );
+                    updateSetting('heatValue', '50')
+                    updateSetting('heatEnabled', 'false');
                 } else {
                     heatToggle.checked = true;
                     console.log('Heat turned on');
-                    updateSettings(
-                        sessionStorage.getItem('SessionID'),
-                        'heatEnabled',
-                        'true',
-                        'PUT'
-                    );
+                    updateSetting('heatValue', $('#heatLevelRange').val());
+                    updateSetting('heatEnabled', 'true');
                 }
-            });
+            })
 
             //////////////////////////////////////////////////////////////
             //////////////////////////////////////////////////////////////
